@@ -164,6 +164,58 @@ Representative repositories:
 
 **Boundary:** supplies observed state and outcomes; it is not the authority for abstract semantics.
 
+## BQML Ecosystem — 「学習」
+
+BQML is the **learning layer across the four ecosystems**, not a fifth ownership boundary.
+
+```text
+Real World
+    ↓ observations
+BigQuery
+    ↓ analytical projection
+Ontology ─── Synapse
+    ↓           ↓
+      Matrix (Go)
+           ↓
+         BQML
+    ┌──────┼──────┐
+    ↓      ↓      ↓
+  cluster predict learn
+    └──────┼──────┘
+           ↓
+    learned evidence
+           ↓
+      Matrix / Agents
+           ↓
+       Real World
+```
+
+Responsibilities:
+
+| Component | Responsibility |
+|---|---|
+| `bonsai/repos` | observe repository facts |
+| `bonsai/ontology` | define meaning and semantic contracts |
+| `bonsai/synapse` | define weighted relationships |
+| `bonsai/matrix` | compute vectors, matrices, scores and features in Go |
+| BigQuery | retain analytical projections and evidence |
+| BQML | learn clusters, predictions, anomalies, forecasts and weights |
+| Agents | act on learned evidence |
+
+Core rule:
+
+> **BQML is not the source of truth.** It learns from projections of observed data, Ontology, Synapse and Matrix, then returns learned evidence and weights to the ecosystem.
+
+Governance remains:
+
+```text
+observed → inferred → proposed → validated → declared
+```
+
+The canonical declaration belongs to the semantic layer; ML output is evidence until validated.
+
+The full declarative definition is maintained in `bqml.yaml`.
+
 ## Responsibility matrix
 
 | Ecosystem | Core question | Owns | Does not own |
@@ -172,6 +224,7 @@ Representative repositories:
 | Agent | Who / Decide? | actors, roles, plans, coordination | canonical ontology, raw state |
 | Execution | How? | workflows, tools, operations | business meaning |
 | Real World | What happened? | observations, products, production, outcomes | canonical meaning |
+| BQML learning | What can we learn? | models, clusters, predictions, learned weights | source-of-truth meaning |
 
 ## Four-ecosystem loop
 
@@ -210,6 +263,7 @@ The four ecosystems are the **top-level boundaries**. Existing layers fit inside
 | Agent | 実装層 / agent organization |
 | Execution | 実装層 + 道具層 + 通信層 |
 | Real World | データ層 + physical production |
+| BQML learning | BigQuery projection + ML + evidence |
 
 ## Manufacturing example
 
@@ -245,6 +299,7 @@ ecosystem  = what we declare
 repos      = what we observe
 database   = what we retain
 analysis   = what we infer
+BQML       = what we learn
 ```
 
 `ecosystem` remains declarative-first. AI inference may improve the registry later, but does not become the initial authority for repository meaning.
@@ -270,7 +325,9 @@ Tool / vendor execution
       ↓
 Evidence / outcome
       ↓
-database
+BigQuery
+      ↓
+BQML learning
       ↓
 semantic review
 ```
@@ -279,6 +336,6 @@ semantic review
 
 ## Core principle
 
-> **Four ecosystems, four responsibilities: meaning defines, agents decide, execution acts, reality proves.**
+> **Four ecosystems, four responsibilities: meaning defines, agents decide, execution acts, reality proves; BQML learns across the loop.**
 
 The ecosystems communicate through explicit contracts and evidence rather than direct ownership of one another.
