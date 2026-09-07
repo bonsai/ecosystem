@@ -1,0 +1,98 @@
+api_version: "v1"
+id: game
+name: Game Ecosystem
+version: "0.1"
+description: >
+  Game domain covering game rules, worlds, characters, assets, progression,
+  interaction, simulation and game production.
+
+principles:
+  domain: semantic_cluster
+  repo: implementation_responsibility
+  capability: reusable_skill
+  asset: reusable_game_content
+  evidence: observed_player_outcome
+  workflow: executable_process
+
+repos:
+  bonsai/game:
+    role: game_domain
+    capabilities: [game_rules, simulation, game_design]
+  bonsai/aw.tui:
+    role: game_like_interaction_interface
+    capabilities: [tui, visualization, state_view]
+  bonsai/aw:
+    role: workflow_orchestrator
+    capabilities: [routing, generation, execution]
+
+capabilities:
+  design: [game_design, rules_design, level_design]
+  world: [world_model, map, environment]
+  entities: [character, npc, item, equipment]
+  mechanics: [combat, progression, economy, quests]
+  runtime: [simulation, state_management, event_handling]
+  presentation: [ui, tui, animation, audio]
+  analytics: [telemetry, player_behavior, balancing]
+
+entities:
+  - game
+  - world
+  - map
+  - scene
+  - character
+  - player
+  - npc
+  - item
+  - equipment
+  - quest
+  - rule
+  - event
+  - state
+  - level
+  - asset
+  - score
+  - session
+  - evidence
+  - workflow
+
+relations:
+  contains: [game, world]
+  located_in: [character, scene]
+  equipped_with: [character, equipment]
+  governed_by: [game, rule]
+  triggers: [event, rule]
+  changes: [event, state]
+  progresses: [player, level]
+  rewards: [quest, item]
+  represented_by: [entity, asset]
+  evidenced_by: [session, evidence]
+
+workflows:
+  game_prototype:
+    input: [game_idea, rules, assets]
+    steps: [define_world, define_entities, define_rules, implement_loop, playtest, collect_evidence]
+    output: [playable_prototype, telemetry]
+  balance:
+    input: [game_state, player_outcomes]
+    steps: [collect_telemetry, compute_metrics, detect_imbalance, propose_change, playtest]
+    output: [balance_change, evidence]
+
+interfaces:
+  upstream: [repos, ontology, intelligence]
+  downstream: [matrix, bqml, agents, aw]
+
+boundaries:
+  game: owns_game_semantics_and_rules
+  matrix: owns_deterministic_scores_and_features
+  bqml: owns_learned_player_and_balance_models
+  aw: owns_workflow_routing_and_generation
+  presentation: owns_runtime_visualization
+
+governance:
+  observed: player_or_runtime_fact
+  computed: deterministic_game_metric
+  learned: model_result
+  proposed: mechanic_or_balance_candidate
+  validated: playtest_result
+  declared: game_domain
+  source_of_truth: domain_yaml
