@@ -1,0 +1,75 @@
+# Bonsai Ecosystem — Solve domain
+
+id: solve
+name: Solve
+version: "0.1.0"
+
+description: >
+  問題解決を統合するエコシステムドメイン。Awareで現実を捉え、Intentを定義し、
+  Thinkで推論し、Intelligenceを適用し、AXで人間とAgentの協働を設計し、
+  FDEで現場実装し、Outcomeを測定してFeedbackをAwareへ戻す。
+
+pipeline:
+  - aware
+  - intent
+  - think
+  - intelligence
+  - ax
+  - fde
+  - outcome
+  - feedback
+
+domains:
+  aware:
+    repo: bonsai/Aware.md
+    role: observation
+    outputs: [situation, evidence, problem_candidate]
+  intent:
+    repo: bonsai/intent
+    role: goal_definition
+    outputs: [goal, intent, constraints, success_criteria]
+  think:
+    repo: bonsai/think
+    role: reasoning
+    outputs: [hypothesis, options, plan, decision]
+  intelligence:
+    repo: bonsai/intelligence
+    role: knowledge_and_learning
+    outputs: [insight, pattern, prediction, recommendation]
+  ax:
+    repo: bonsai/AX
+    role: human_agent_experience
+    outputs: [workflow, agent_role, human_role, interaction]
+  fde:
+    repos: [bonsai/fde-agent, bonsai/fdes-orchestra]
+    role: field_execution
+    outputs: [implementation, operation, outcome, feedback]
+  outcome:
+    role: measurement
+    outputs: [result, metrics, roi, lessons]
+  feedback:
+    role: learning_loop
+    outputs: [updated_knowledge, updated_intent, new_problem]
+    next: aware
+
+relations:
+  - {from: aware, to: intent, relation: informs}
+  - {from: intent, to: think, relation: constrains}
+  - {from: think, to: intelligence, relation: queries}
+  - {from: intelligence, to: think, relation: improves}
+  - {from: think, to: ax, relation: produces_plan}
+  - {from: ax, to: fde, relation: enables}
+  - {from: fde, to: outcome, relation: produces}
+  - {from: outcome, to: feedback, relation: generates}
+  - {from: feedback, to: aware, relation: updates}
+
+lifecycle: [detect, define, reason, design, execute, measure, learn]
+
+success:
+  primary: [outcome, measurable_value, user_value]
+  secondary: [time_saved, cost_reduced, quality_improved, knowledge_created, automation_increased]
+
+axiom: >
+  Sense reality -> define intent -> think -> apply intelligence ->
+  design human-agent collaboration -> execute in the field ->
+  measure value -> learn -> sense again.
