@@ -1,0 +1,90 @@
+api_version: "v1"
+id: architecture
+name: Architecture Ecosystem
+version: "0.1"
+description: >
+  Built-environment domain covering architecture, building design,
+  construction planning, site knowledge, materials, trades and delivery.
+
+principles:
+  domain: semantic_cluster
+  repo: implementation_responsibility
+  capability: reusable_skill
+  provider: physical_production_capability
+  evidence: observed_project_fact
+  workflow: executable_process
+
+repos:
+  bonsai/architecture:
+    role: architecture_domain
+    capabilities: [building_design, spatial_design, architectural_knowledge]
+  bonsai/oem:
+    role: production_provider_registry
+    capabilities: [supplier_matching, manufacturing]
+
+capabilities:
+  planning: [site_analysis, requirements, feasibility]
+  design: [concept_design, spatial_design, building_design]
+  documentation: [drawings, specifications, quantity_estimation]
+  construction: [procurement, scheduling, quality_control]
+  knowledge: [building_codes, materials, construction_methods]
+
+entities:
+  - site
+  - building
+  - space
+  - room
+  - floor
+  - structure
+  - material
+  - component
+  - drawing
+  - specification
+  - contractor
+  - provider
+  - project
+  - cost
+  - schedule
+  - evidence
+  - workflow
+
+relations:
+  located_on: [building, site]
+  contains: [building, space]
+  composed_of: [building, component]
+  made_from: [component, material]
+  documented_by: [building, drawing]
+  specified_by: [component, specification]
+  produced_by: [component, provider]
+  executed_by: [project, contractor]
+  evidenced_by: [project, evidence]
+
+workflows:
+  building_concept:
+    input: [site, requirements, constraints]
+    steps: [analyze_site, define_program, generate_concept, evaluate, document]
+    output: [concept, spatial_plan, evidence]
+  construction_plan:
+    input: [design, specifications, budget]
+    steps: [decompose_work, estimate_cost, schedule, source_providers, validate]
+    output: [work_plan, cost_estimate, schedule]
+
+interfaces:
+  upstream: [repos, ontology, evidence]
+  downstream: [matrix, bqml, agents, aw]
+
+boundaries:
+  architecture: owns_building_semantics_and_design_knowledge
+  matrix: owns_deterministic_computation
+  bqml: owns_learned_estimates
+  aw: owns_routing_and_execution
+  external_contractors: own_physical_construction
+
+governance:
+  observed: project_fact
+  computed: deterministic_result
+  learned: model_result
+  proposed: design_or_relationship_candidate
+  validated: reviewed_project_knowledge
+  declared: architecture_domain
+  source_of_truth: domain_yaml
