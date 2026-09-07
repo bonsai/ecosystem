@@ -1,0 +1,264 @@
+api_version: "v1"
+id: voice-bbs-web
+name: Voice BBS Web Ecosystem
+version: "0.1"
+description: >
+  匿名・認証不要の音声コミュニケーション空間。テーマごとの room に
+  voice bubble を浮かべ、泡に触れると声が再生される。音声を中心に
+  人と人の軽い非同期コミュニケーションを実現するプロダクトドメイン。
+
+principles:
+  domain: semantic_cluster
+  repo: implementation_responsibility
+  room: conversation_space
+  voice_bubble: audio_message
+  device_id: anonymous_identity
+  evidence: observed_user_outcome
+  workflow: executable_process
+
+repo:
+  bonsai/voice-bbs-web:
+    role: product_and_runtime
+    capabilities:
+      - anonymous_voice_posting
+      - room_management
+      - voice_bubble_playback
+      - recording
+      - audio_encoding
+      - audio_storage
+      - search
+      - rate_limiting
+      - self_delete
+      - cloudflare_deployment
+
+product:
+  model:
+    lobby: room_discovery
+    room: voice_space
+    voice_bubble: voice_message
+    interaction: touch_to_speak
+  constraints:
+    authentication: none
+    identity: device_id
+    daily_post_limit: 4
+    max_recording_seconds: 30
+    infrastructure: cloudflare_free_tier
+
+entities:
+  - user
+  - device
+  - device_id
+  - category
+  - room
+  - voice_bubble
+  - recording
+  - audio
+  - post
+  - event
+  - playback
+  - search_index
+  - evidence
+  - workflow
+
+categories:
+  - want
+  - search
+  - trouble
+  - motetai
+
+relations:
+  creates: [device, room]
+  contains: [room, voice_bubble]
+  records: [device, recording]
+  produces: [recording, voice_bubble]
+  belongs_to: [room, category]
+  plays: [voice_bubble, playback]
+  deletes: [device, voice_bubble]
+  indexed_by: [room, search_index]
+  limited_by: [device, rate_limit]
+  evidenced_by: [workflow, evidence]
+
+capabilities:
+  communication:
+    - anonymous_voice_posting
+    - room_conversation
+    - asynchronous_listening
+  interaction:
+    - touch_to_speak
+    - floating_bubbles
+    - ambient_audio
+    - gesture_recording
+  audio:
+    - microphone_capture
+    - media_recorder
+    - wav_encoding
+    - png_embedding
+    - audio_decode
+    - playback
+  backend:
+    - hono_api
+    - d1_sqlite
+    - fts5_search
+    - r2_audio_storage
+    - same_origin_audio_proxy
+  frontend:
+    - vue3
+    - vite
+    - typescript
+    - tailwind
+    - vitest
+  operations:
+    - cloudflare_pages
+    - rate_limiting
+    - anonymous_device_management
+
+architecture:
+  frontend:
+    primary: apps/web-vue
+    framework: vue3
+    build: vite
+    language: typescript
+    status: production
+  legacy:
+    - apps/web-next
+  api:
+    runtime: cloudflare_pages_functions
+    framework: hono
+    boundary: /api
+  data:
+    database: cloudflare_d1
+    search: sqlite_fts5
+    object_storage: cloudflare_r2
+  audio:
+    capture: mediarecorder
+    processing: web_audio_api
+    representation: wav_embedded_in_png
+    delivery: same_origin_function_proxy
+
+workflows:
+  discover_room:
+    input: [category, query]
+    steps: [load_categories, list_rooms, filter, select_room]
+    output: [room]
+  create_room:
+    input: [device_id, category, title]
+    steps: [validate, rate_limit, create_room, publish]
+    output: [room]
+  record_voice:
+    input: [device_id, room, microphone_input]
+    steps: [request_permission, record, decode, trim_silence, encode, validate, rate_limit, upload, create_voice_bubble]
+    output: [voice_bubble, audio]
+  touch_to_speak:
+    input: [voice_bubble]
+    steps: [fetch_audio, decode, play, update_playback_state]
+    output: [playback]
+  delete_own_voice:
+    input: [device_id, voice_bubble]
+    steps: [verify_owner, delete_audio, delete_record]
+    output: [deletion_result]
+  observe_usage:
+    input: [rooms, voice_bubbles, playbacks]
+    steps: [collect_events, aggregate_metrics, store_evidence]
+    output: [evidence]
+
+api_contract:
+  health: GET /api/healthz
+  categories: GET /api/categories
+  rooms: GET /api/threads?category=&q=&limit=50
+  create_room: POST /api/threads
+  voices: GET /api/threads/:id/posts
+  create_voice: POST /api/threads/:id/posts
+  delete_voice: DELETE /api/posts/:id?device_id=
+  quota: GET /api/count/:device_id
+  audio: GET /api/audio/:key
+
+interfaces:
+  upstream:
+    - solve
+    - intent
+    - think
+    - intelligence
+    - AX
+  downstream:
+    - aw
+    - bqml
+    - cloudflare
+  related:
+    - bonsai/voice-bbs-web
+
+learning:
+  evidence:
+    - rooms_created
+    - voices_created
+    - voice_playbacks
+    - recording_abort_rate
+    - daily_active_devices
+    - room_revisit_rate
+    - playback_per_voice
+    - moderation_events
+    - infrastructure_cost
+  bqml:
+    purposes:
+      - room_clustering
+      - engagement_prediction
+      - playback_prediction
+      - anomaly_detection
+      - retention_prediction
+
+success:
+  primary:
+    - voice_posted
+    - voice_played
+    - room_revisited
+    - user_value
+  secondary:
+    - recording_completion_rate
+    - playback_per_voice
+    - room_revisit_rate
+    - latency
+    - reliability
+    - cost_per_voice
+
+security_and_privacy:
+  authentication: none
+  personal_information: minimized
+  microphone: explicit_user_action_only
+  ownership: device_id
+  destructive_actions: owner_only
+  rate_limit: 4_posts_per_device_per_day
+
+implementation_gate:
+  before_change:
+    - update_domain_contract
+    - update_product_docs
+    - register_issue
+  implementation:
+    - test_first
+    - implement
+    - verify
+    - update_docs
+  verification:
+    - unit_test
+    - typecheck
+    - build
+    - deployed_smoke_test
+
+status:
+  source_commit: 636398cc77c52de603fe06efd0c1caf396f46e21
+  frontend_direction: vue_vite
+  backend_boundary: stable_hono_d1_r2
+  production: cloudflare_pages
+
+boundaries:
+  ecosystem: owns_domain_contract
+  voice_bbs_web: owns_product_implementation
+  intelligence: owns_reasoning_and_agent_coordination
+  aw: owns_workflow_execution
+  bqml: owns_statistical_learning
+  cloudflare: owns_infrastructure_runtime
+
+core_principle: >
+  Voice BBS is a voice-first social space: room provides context, the voice
+  bubble carries human expression, touch creates immediate playback, and
+  observed usage becomes evidence for improving the product. The domain YAML
+  defines meaning and boundaries; the repository implements them.
