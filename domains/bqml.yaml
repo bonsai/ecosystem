@@ -1,0 +1,177 @@
+# BQML domain registry
+# Domain = semantic cluster / Repo = responsibility / Capability = reusable skill
+# BigQuery = analytical substrate / BQML = learned-model domain
+
+api_version: "v1"
+id: bqml
+name: BigQuery ML Ecosystem
+version: "0.1"
+description: >
+  A domain for analytical learning with BigQuery ML. It owns model
+  definitions, training data contracts, predictions, clustering and
+  learned weights while remaining downstream of observed evidence and
+  feature computation.
+
+principles:
+  domain: semantic_cluster
+  repo: implementation_responsibility
+  feature: computed_representation
+  evidence: observed_outcome
+  model: learned_estimator
+  prediction: model_output
+  dataset: analytical_history
+
+repos:
+  bonsai/yaml-as-agent:
+    role: schema_and_learning_pipeline
+    capabilities: [bqml_schema, feature_modeling, repo_health_learning]
+  bonsai/ds-agent:
+    role: data_science_agent
+    capabilities: [bqml, analytics, model_operation]
+  bonsai/ecosystem:
+    role: domain_registry
+    capabilities: [domain_ontology, model_contracts]
+
+capabilities:
+  ingestion: [evidence_ingestion, feature_ingestion]
+  analytics: [aggregation, segmentation, anomaly_detection]
+  learning: [regression, classification, clustering, forecasting]
+  prediction: [scoring, ranking, estimation]
+  feedback: [prediction_evaluation, model_retraining, drift_detection]
+
+entities:
+  - dataset
+  - feature
+  - observation
+  - evidence
+  - model
+  - prediction
+  - cluster
+  - metric
+  - training_run
+  - evaluation
+  - workflow
+  - domain
+
+relations:
+  stored_in: [observation, dataset]
+  represented_by: [observation, feature]
+  trained_on: [model, dataset]
+  produces: [model, prediction]
+  evaluated_by: [model, evaluation]
+  predicts: [model, outcome]
+  clusters: [model, entity]
+  feeds: [prediction, workflow]
+  derived_from: [prediction, evidence]
+  belongs_to: [model, domain]
+
+inputs:
+  evidence:
+    - repo_observations
+    - production_outcomes
+    - customer_feedback
+    - historical_metrics
+  features:
+    - computed_features
+    - domain_features
+    - time_series_features
+
+storage:
+  platform: bigquery
+  role: analytical_history
+  layers:
+    raw: observed_evidence
+    feature: model_features
+    training: training_datasets
+    prediction: model_outputs
+    evaluation: model_quality
+
+models:
+  regression:
+    purpose: continuous_prediction
+  classification:
+    purpose: categorical_prediction
+  kmeans:
+    purpose: clustering
+  time_series:
+    purpose: forecasting
+
+lifecycle:
+  - collect_evidence
+  - normalize
+  - compute_features
+  - create_training_dataset
+  - train_model
+  - evaluate_model
+  - publish_model
+  - predict
+  - compare_with_actual
+  - monitor_drift
+  - retrain
+
+interfaces:
+  upstream:
+    - domain
+    - graph
+    - computation
+    - bigquery
+  downstream:
+    - agents
+    - aw
+    - workflows
+    - matrix
+
+boundaries:
+  domain: owns_semantic_truth
+  graph: owns_relationship_discovery
+  computation: owns_deterministic_features
+  bigquery: owns_analytical_history
+  bqml: owns_statistical_models_predictions_and_evaluation
+  agents: consume_predictions_for_decisions
+  aw: routes_model_enabled_workflows
+
+governance:
+  observed: source_evidence
+  computed: deterministic_feature
+  learned: model_result
+  proposed: candidate_prediction_or_relationship
+  validated: evaluated_model_result
+  declared: bqml_domain
+  source_of_truth: domain_yaml
+
+architecture: |
+  Domain / Repositories
+          |
+          v
+       Evidence
+          |
+          v
+       BigQuery
+          |
+          v
+       Features
+          |
+          v
+         BQML
+          |
+     +----+----+
+     |         |
+  Prediction  Cluster
+     |         |
+     +----+----+
+          |
+          v
+       Agents / AW
+          |
+          v
+       Workflow
+          |
+          v
+       Outcome
+          |
+          +------> Evidence
+
+core_principle: >
+  BQML is a first-class domain, not merely a field inside another domain.
+  BigQuery provides analytical history and BQML provides learned models;
+  neither replaces the semantic source of truth held by domain YAML.
