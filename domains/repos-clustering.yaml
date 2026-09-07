@@ -1,0 +1,195 @@
+# Repository clustering experiment
+# Source: repository metadata + topics + README/description
+# Goal: propose semantic domain clusters; declarations remain human/registry controlled.
+
+id: repos-clustering
+name: Repository Semantic Clustering Experiment
+version: "0.1"
+
+source:
+  repository: bonsai/repos
+  observations:
+    - name
+    - description
+    - topics
+    - language
+    - license
+    - stars
+    - forks
+    - open_issues
+    - created_at
+    - updated_at
+    - default_branch
+    - archived
+    - visibility
+  optional_semantic_sources:
+    - README
+    - package_manifest
+    - directory_names
+    - workflow_names
+
+feature_model:
+  identity:
+    - repository_name
+  semantic:
+    - description_text
+    - topics
+    - readme_terms
+  technical:
+    - primary_language
+    - dependency_terms
+    - workflow_terms
+  activity:
+    - stars
+    - forks
+    - open_issues
+    - updated_at
+
+normalization:
+  text:
+    - lowercase
+    - tokenize
+    - remove_stopwords
+    - normalize_hyphens
+  topics:
+    - lowercase
+    - deduplicate
+    - map_synonyms
+  repository_name:
+    - split_by_hyphen
+    - split_by_underscore
+
+embedding:
+  inputs:
+    - repository_name
+    - description_text
+    - topics
+    - readme_terms
+    - primary_language
+  strategy:
+    baseline: tfidf
+    optional: text_embedding
+
+clustering:
+  baseline:
+    algorithm: kmeans
+    input: repository_vectors
+    k_range: [3, 4, 5, 6, 8, 10]
+    selection: silhouette_score
+  alternatives:
+    - hierarchical
+    - dbscan
+
+outputs:
+  repository_cluster:
+    fields:
+      - repository
+      - cluster_id
+      - distance
+      - confidence
+  cluster_profile:
+    fields:
+      - cluster_id
+      - top_topics
+      - top_terms
+      - repositories
+      - dominant_languages
+  proposed_domain:
+    fields:
+      - domain_id
+      - cluster_ids
+      - repositories
+      - evidence
+      - confidence
+      - status
+
+example_domains:
+  fashion:
+    expected_signals:
+      - socks
+      - aloha
+      - textile
+      - embroidery
+      - knitting
+      - costume
+      - oem
+  intelligence:
+    expected_signals:
+      - agent
+      - ai
+      - llm
+      - reasoning
+      - ontology
+      - intelligence
+  execution:
+    expected_signals:
+      - workflow
+      - cli
+      - tui
+      - automation
+      - aw
+  data_ml:
+    expected_signals:
+      - bigquery
+      - bqml
+      - data
+      - machine-learning
+      - analytics
+
+ontology_boundary:
+  observed:
+    - github_metadata
+    - repository_topics
+    - repository_text
+  inferred:
+    - cluster
+    - similarity
+    - dominant_topics
+  proposed:
+    - domain
+    - capability
+    - synapse
+  validated:
+    - reviewed_cluster
+    - reviewed_domain
+  declared:
+    - domains/*.yaml
+
+pipeline: |
+  GitHub
+    -> bonsai/repos
+    -> normalize metadata
+    -> build semantic features
+    -> vectorize
+    -> cluster
+    -> profile clusters
+    -> propose domains
+    -> human / ontology validation
+    -> domains/*.yaml
+    -> synapse
+    -> BQML
+
+mvp:
+  scope:
+    repositories: recent_30
+    features:
+      - name
+      - description
+      - topics
+      - language
+    algorithm: kmeans
+  deliverables:
+    - clusters.json
+    - cluster-profile.json
+    - proposed-domains.yaml
+    - simple HTML visualization
+  success_criteria:
+    - clusters are interpretable
+    - similar repositories are grouped
+    - known domains emerge without hardcoding
+    - proposed domains can be reviewed before declaration
+
+principle: >
+  Clustering discovers structure; it does not declare ontology. GitHub metadata
+  provides evidence, clustering proposes semantic groups, and the ecosystem
+  registry validates and declares domains.
