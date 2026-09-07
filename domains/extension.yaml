@@ -1,0 +1,174 @@
+schema: bonsai/ecosystem/domain-extension/v1
+name: extension
+kind: global_domain
+version: "1.0"
+description: >
+  Bonsai ecosystem全体で利用する拡張子オントロジ。
+  拡張子を単なるファイル名ではなく、データ表現・定義・交換・分析・表示・実行・
+  ドメイン連携の役割として分類する。
+
+principles:
+  extension_describes: representation_and_transport
+  schema_describes: semantics
+  canonical_data: json
+  definition: yaml
+  exchange: csv
+  analytics: parquet
+  analytical_platform: bigquery
+  machine_learning: bqml
+
+extensions:
+  .json:
+    role: canonical_data
+    category: structured_data
+    lifecycle: source_of_truth
+    uses: [api_payload, pattern, pixel_grid, schema_instance]
+  .yaml:
+    role: definition
+    category: metadata_configuration
+    lifecycle: declaration
+    uses: [ontology, schema, workflow, agent, configuration]
+  .yml:
+    alias_of: .yaml
+  .csv:
+    role: tabular_exchange
+    category: structured_data
+    lifecycle: import_export
+    uses: [cell_dataset, feature_table, matrix, bqml_import]
+  .tsv:
+    role: tabular_exchange
+    category: structured_data
+    lifecycle: import_export
+  .parquet:
+    role: analytical_data
+    category: columnar_data
+    lifecycle: analytics
+    uses: [feature_dataset, pattern_dataset, bqml_training, bigquery_transport]
+  .ndjson:
+    role: streaming_exchange
+    category: structured_data
+    lifecycle: ingestion
+  .sql:
+    role: analytical_definition
+    category: query
+    lifecycle: analytics
+    uses: [bigquery, bqml, transformation]
+  .md:
+    role: documentation
+    category: knowledge
+    lifecycle: knowledge
+  .txt:
+    role: plain_text
+    category: raw_data
+    lifecycle: ingestion
+  .html:
+    role: web_document
+    category: presentation
+    lifecycle: delivery
+  .svg:
+    role: vector_visual
+    category: visual
+    lifecycle: input_output
+  .png:
+    role: raster_visual
+    category: visual
+    lifecycle: input_output
+  .jpg:
+    role: raster_visual
+    category: visual
+    lifecycle: input_output
+  .jpeg:
+    alias_of: .jpg
+  .webp:
+    role: raster_visual
+    category: visual
+    lifecycle: input_output
+  .gif:
+    role: raster_visual
+    category: visual
+    lifecycle: input_output
+  .bmp:
+    role: raster_machine
+    category: visual_machine
+    lifecycle: machine_interchange
+  .tiff:
+    role: raster_visual
+    category: visual
+    lifecycle: production_input
+  .wif:
+    role: domain_interchange
+    category: textile
+    lifecycle: domain_exchange
+    domain: textile
+  .tc2:
+    role: machine_specific
+    category: textile_machine
+    lifecycle: machine_output
+    domain: textile
+  .go:
+    role: runtime_implementation
+    category: source_code
+    lifecycle: execution
+  .py:
+    role: runtime_implementation
+    category: source_code
+    lifecycle: execution
+  .js:
+    role: runtime_implementation
+    category: source_code
+    lifecycle: execution
+  .ts:
+    role: runtime_implementation
+    category: source_code
+    lifecycle: execution
+  .ipynb:
+    role: analytical_notebook
+    category: analysis
+    lifecycle: exploration
+
+pattern:
+  canonical: .json
+  exchange: .csv
+  analytics: .parquet
+  warehouse: bigquery
+  ml: bqml
+  pipeline:
+    - image
+    - pixel_grid_json
+    - cell_csv
+    - feature_parquet
+    - bigquery
+    - bqml
+
+bqml:
+  principle: >
+    BQMLは拡張子そのものを学習するのではなく、JSON Patternから生成した
+    Pattern Featureを学習する。CSV/Parquetはcanonical JSONから再生成可能な投影。
+  feature_examples:
+    - width
+    - height
+    - aspect_ratio
+    - color_count
+    - density
+    - symmetry_x
+    - symmetry_y
+    - complexity
+    - connected_components
+    - edge_density
+    - dominant_color_ratio
+
+ownership:
+  ecosystem:
+    role: global_extension_ontology
+  dots:
+    role: canonical_data_schema_api_and_analytics_projection
+  domain_repositories:
+    role: domain_semantics_and_domain_specific_formats
+
+relationships:
+  extension: represents
+  schema: defines
+  domain: interprets
+  dots: canonicalizes
+  bigquery: stores_analytical_projection
+  bqml: learns_from_features
