@@ -1,13 +1,15 @@
-# Fashion Ecosystem
-# Domain = semantic cluster / Repo = responsibility / Capability = reusable connection
+# Fashion domain registry
+# Domain = semantic cluster / Repo = responsibility / Capability = reusable skill
+# Provider = production capability / Workflow = executable process
+# Evidence = observed outcome / Graph = discovered relationship
 
+api_version: "v1"
 id: fashion
 name: Fashion Ecosystem
-version: "0.1"
+version: "0.2"
 description: >
-  Apparel, textile, accessories, customization and fashion production ecosystem.
-  Repositories remain independently responsible while this registry connects
-  their semantic roles, capabilities, providers, workflows and evidence.
+  Apparel, textile, accessories, customization and fashion production.
+  This file is a semantic registry, not an implementation repository.
 
 principles:
   repo: responsibility
@@ -17,88 +19,41 @@ principles:
   product: business_output
   workflow: executable_process
   evidence: observed_outcome
+  model: learned_estimate
 
 repos:
-  socks:
-    repo: bonsai/socks
+  bonsai/socks:
     role: product
-    capabilities:
-      - one_point_embroidery
-      - small_lot_production
-      - customization
-  aloha:
-    repo: bonsai/aloha
+    capabilities: [one_point_embroidery, small_lot_production, customization]
+  bonsai/aloha:
     role: apparel_product
-    capabilities:
-      - apparel_design
-      - pattern_design
-      - customization
-  textile:
-    repo: bonsai/textile
+    capabilities: [apparel_design, pattern_design, customization]
+  bonsai/textile:
     role: production_ir
-    capabilities:
-      - textile_representation
-      - production_design
-  costume_generation:
-    repo: bonsai/costume-generation
+    capabilities: [textile_representation, production_design]
+  bonsai/costume-generation:
     role: design_composition
-    capabilities:
-      - costume_generation
-      - garment_composition
-      - design_to_production
-  shishu:
-    repo: bonsai/shishu
+    capabilities: [costume_generation, garment_composition, design_to_production]
+  bonsai/shishu:
     role: embroidery_specialization
-    capabilities:
-      - embroidery
-      - stitch_design
-      - embroidery_ir
-  amimono:
-    repo: bonsai/amimono
+    capabilities: [embroidery, stitch_design, embroidery_ir]
+  bonsai/amimono:
     role: knitting_specialization
-    capabilities:
-      - knitting
-      - knitting_pattern
-      - knitting_ir
-  oem:
-    repo: bonsai/oem
+    capabilities: [knitting, knitting_pattern, knitting_ir]
+  bonsai/oem:
     role: manufacturing_provider_registry
-    capabilities:
-      - oem
-      - supplier_matching
-      - production_estimation
+    capabilities: [oem, supplier_matching, production_estimation]
 
 capabilities:
-  design:
-    - costume_generation
-    - apparel_design
-    - pattern_design
-  textile:
-    - textile_representation
-    - fabric_selection
-    - production_design
-  customization:
-    - embroidery
-    - knitting
-    - one_point_embroidery
-    - name_customization
-  manufacturing:
-    - oem
-    - small_lot_production
-    - supplier_matching
-  commerce:
-    - product_listing
-    - ecommerce
-    - fulfillment
+  design: [costume_generation, apparel_design, pattern_design]
+  textile: [textile_representation, fabric_selection, production_design]
+  customization: [embroidery, knitting, one_point_embroidery, name_customization]
+  manufacturing: [oem, small_lot_production, supplier_matching]
+  commerce: [product_listing, ecommerce, fulfillment]
 
 providers:
   registry: bonsai/oem
-  external:
-    - factories
-    - embroidery_shops
-    - knitting_shops
-    - textile_manufacturers
-    - printing_vendors
+  types: [factory, embroidery_shop, knitting_shop, textile_manufacturer, printing_vendor]
 
 products:
   - socks
@@ -110,55 +65,17 @@ products:
 
 workflows:
   custom_apparel:
-    input:
-      - idea
-      - image
-      - text
-      - customer_preferences
-    steps:
-      - semanticize
-      - design
-      - select_material
-      - select_production_method
-      - match_provider
-      - estimate_cost
-      - produce
-      - inspect
-      - deliver
-    output:
-      - product
-      - cost
-      - lead_time
-      - quality_evidence
-
+    input: [idea, image, text, customer_preferences]
+    steps: [semanticize, design, select_material, select_production_method, match_provider, estimate_cost, produce, inspect, deliver]
+    output: [product, cost, lead_time, quality_evidence]
   doodle_to_socks:
-    input:
-      - child_doodle
-    steps:
-      - image_to_vector
-      - simplify_for_embroidery
-      - generate_stitch_design
-      - select_sock
-      - match_oem
-      - produce
-      - inspect
-    output:
-      - embroidered_socks
-      - production_evidence
-
+    input: [child_doodle]
+    steps: [image_to_vector, simplify_for_embroidery, generate_stitch_design, select_sock, match_oem, produce, inspect]
+    output: [embroidered_socks, production_evidence]
   garment_to_embroidery:
-    input:
-      - garment
-      - motif
-    steps:
-      - semanticize_motif
-      - convert_to_embroidery_ir
-      - estimate_stitch_count
-      - match_provider
-      - produce
-      - inspect
-    output:
-      - embroidered_garment
+    input: [garment, motif]
+    steps: [semanticize_motif, convert_to_embroidery_ir, estimate_stitch_count, match_provider, produce, inspect]
+    output: [embroidered_garment]
 
 ontology:
   entities:
@@ -172,143 +89,70 @@ ontology:
     - stitch
     - manufacturer
     - provider
+    - capability
     - product
     - customer
     - order
+    - workflow
+    - evidence
   relations:
-    - type: made_from
-      from: product
-      to: textile
-    - type: decorated_with
-      from: garment
-      to: motif
-    - type: produced_by
-      from: product
-      to: provider
-    - type: specializes_in
-      from: provider
-      to: capability
-    - type: implements
-      from: repo
-      to: capability
-    - type: derived_from
-      from: production_ir
-      to: product
+    made_from: [product, textile]
+    decorated_with: [garment, motif]
+    produced_by: [product, provider]
+    specializes_in: [provider, capability]
+    implements: [repo, capability]
+    derived_from: [product, production_ir]
+    executes: [agent, workflow]
+    validated_by: [relationship, evidence]
 
-synapse:
-  role: weighted_relationships
-  nodes:
-    - repos
-    - capabilities
-    - providers
-    - products
-    - workflows
-  examples:
-    - from: costume-generation
-      to: textile
-      relation: design_to_production
-    - from: textile
-      to: shishu
-      relation: embroidery_adapter
-    - from: textile
-      to: amimono
-      relation: knitting_adapter
-    - from: product
-      to: oem
-      relation: production_provider
-    - from: socks
-      to: shishu
-      relation: embroidery_production
+graph:
+  role: discovered_and_declared_relationships
+  edges:
+    - [bonsai/costume-generation, bonsai/textile, design_to_production]
+    - [bonsai/textile, bonsai/shishu, embroidery_adapter]
+    - [bonsai/textile, bonsai/amimono, knitting_adapter]
+    - [product, bonsai/oem, production_provider]
+    - [bonsai/socks, bonsai/shishu, embroidery_production]
+  discovery:
+    sources: [repo_metadata, readme, topics, dependencies, workflows, issues]
+    status: [observed, inferred, proposed, validated]
 
-matrix:
-  role: computation
-  inputs:
-    - product_features
-    - textile_features
-    - provider_features
-    - cost_features
-    - lead_time_features
-    - quality_features
-  outputs:
-    - product_vector
-    - provider_vector
-    - match_score
-    - cost_estimate
-    - production_score
+computation:
+  matrix:
+    inputs: [product_features, textile_features, provider_features, cost_features, lead_time_features, quality_features]
+    outputs: [product_vector, provider_vector, match_score, cost_estimate, production_score]
 
-bqml:
-  role: learning
-  training_features:
-    - product_features
-    - provider_features
-    - cost_features
-    - lead_time_features
-    - quality_features
-    - historical_outcomes
+learning:
+  engine: bqml
+  features: [product_features, provider_features, cost_features, lead_time_features, quality_features, historical_outcomes]
   models:
-    provider_matching:
-      type: regression
-      output: provider_match_score
-    cost_prediction:
-      type: regression
-      output: expected_cost
-    lead_time_prediction:
-      type: regression
-      output: expected_lead_time
-    quality_prediction:
-      type: regression
-      output: expected_quality
-    product_clustering:
-      type: kmeans
-      output: product_cluster
-  feedback:
-    - production_result
-    - actual_cost
-    - actual_lead_time
-    - quality_result
-    - customer_feedback
+    provider_matching: {type: regression, output: provider_match_score}
+    cost_prediction: {type: regression, output: expected_cost}
+    lead_time_prediction: {type: regression, output: expected_lead_time}
+    quality_prediction: {type: regression, output: expected_quality}
+    product_clustering: {type: kmeans, output: product_cluster}
+  feedback: [production_result, actual_cost, actual_lead_time, quality_result, customer_feedback]
 
 agents:
-  design:
-    role: design_agent
-    capabilities:
-      - costume_generation
-      - apparel_design
-  production:
-    role: production_planner
-    capabilities:
-      - provider_matching
-      - cost_estimation
-      - lead_time_estimation
-  embroidery:
-    role: embroidery_agent
-    capabilities:
-      - embroidery
-      - stitch_design
-  knitting:
-    role: knitting_agent
-    capabilities:
-      - knitting
-      - knitting_pattern
-  oem:
-    role: oem_agent
-    capabilities:
-      - supplier_matching
-      - production_estimation
+  design: {role: design_agent, capabilities: [costume_generation, apparel_design]}
+  production: {role: production_planner, capabilities: [provider_matching, cost_estimation, lead_time_estimation]}
+  embroidery: {role: embroidery_agent, capabilities: [embroidery, stitch_design]}
+  knitting: {role: knitting_agent, capabilities: [knitting, knitting_pattern]}
+  oem: {role: oem_agent, capabilities: [supplier_matching, production_estimation]}
 
 execution:
   orchestrator: bonsai/aw
-  interfaces:
-    - mcp
-    - cli
-    - workflow
-  production_boundary:
-    - external_factory
-    - external_vendor
+  interfaces: [mcp, cli, workflow]
+  responsibilities:
+    router: select_workflow_and_agents
+    generator: generate_repo_or_workflow_candidates
+    executor: run_validated_workflows
+  production_boundary: [external_factory, external_vendor]
 
 learning_loop:
   - observe_customer_request
   - semanticize
+  - discover_relationships
   - design
   - calculate
   - match_provider
@@ -319,11 +163,30 @@ learning_loop:
   - update_weights
   - improve_matching
 
+boundaries:
+  domain: owns_semantic_registry
+  repositories: own_implementation_responsibilities
+  oem: owns_provider_and_manufacturing_knowledge
+  matrix: owns_feature_computation
+  bigquery: owns_analytical_history
+  bqml: owns_learned_models
+  agents: own_decisions_and_coordination
+  aw: owns_routing_generation_and_execution
+  external_vendors: own_physical_production
+
+governance:
+  observed: production_fact
+  inferred: model_result
+  proposed: candidate_relationship_or_capability
+  validated: reviewed_domain_structure
+  declared: fashion_ontology
+  source_of_truth: domain_yaml
+
 architecture: |
   Customer / Market
          |
          v
-      Fashion
+      Fashion Domain
          |
     +----+----+----------------+
     |         |                |
@@ -336,48 +199,24 @@ architecture: |
            Matrix
               |
               v
-          Provider
-          /       \
-        OEM      Factory
-          \       /
+        Provider Registry
               |
               v
            Product
               |
               v
-           Outcome
+           Evidence
               |
               v
-           BigQuery
+        BigQuery / BQML
               |
               v
-            BQML
-              |
-              v
-        learned weights
+        Learned Weights
               |
               +------> Matrix
 
-boundaries:
-  fashion: owns the semantic domain cluster
-  repositories: own implementation responsibilities
-  oem: owns provider/manufacturing knowledge
-  matrix: owns computation
-  bigquery: owns analytical history
-  bqml: owns learned models
-  agents: own decisions and coordination
-  aw: owns execution orchestration
-  external_vendors: own physical production
-
-governance:
-  observed: production_fact
-  inferred: model_result
-  proposed: candidate_relationship_or_capability
-  validated: reviewed_domain_structure
-  declared: fashion_ontology
-
 core_principle: >
-  Fashion is not one repository. It is a semantic ecosystem connecting
-  independently responsible repositories, reusable capabilities, providers,
-  products, workflows and evidence. BQML learns from the ecosystem but does
-  not become its source of truth.
+  Fashion is a semantic ecosystem, not one repository. Domain YAML declares
+  stable meaning and validated relationships; repositories implement their
+  responsibilities; AW routes and generates executable work; BQML learns
+  from evidence but never replaces the domain source of truth.
