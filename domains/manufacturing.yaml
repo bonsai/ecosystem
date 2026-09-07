@@ -1,0 +1,89 @@
+api_version: "v1"
+id: manufacturing
+name: Manufacturing Ecosystem
+version: "0.1"
+description: >
+  Production capabilities, suppliers, factories and manufacturing
+  constraints shared across business domains.
+
+principles:
+  domain: semantic_cluster
+  repo: responsibility
+  provider: production_capability
+  capability: reusable_connection
+  evidence: observed_outcome
+
+repos:
+  bonsai/oem:
+    role: provider_registry
+    capabilities: [supplier_matching, production_estimation, oem]
+  bonsai/textile:
+    role: production_representation
+    capabilities: [textile_ir, production_design]
+  bonsai/shishu:
+    role: embroidery_provider_adapter
+    capabilities: [embroidery, stitch_design]
+  bonsai/amimono:
+    role: knitting_provider_adapter
+    capabilities: [knitting, knitting_pattern]
+
+capabilities:
+  provider_registry: [supplier_matching, provider_discovery]
+  estimation: [cost_estimation, lead_time_estimation, capacity_estimation]
+  production: [small_lot, embroidery, knitting, textile_production]
+  quality: [inspection, quality_evidence]
+
+entities:
+  - provider
+  - factory
+  - capability
+  - machine
+  - material
+  - production_ir
+  - order
+  - cost
+  - lead_time
+  - capacity
+  - quality
+  - evidence
+
+relations:
+  provides: [provider, capability]
+  produces: [provider, product]
+  uses: [production_ir, material]
+  requires: [order, capability]
+  estimated_by: [order, metric]
+  validated_by: [production_result, evidence]
+
+workflows:
+  provider_matching:
+    input: [production_requirements, provider_constraints]
+    steps: [normalize_requirements, discover_providers, score_capability, estimate_cost, estimate_lead_time, propose_provider]
+    output: [provider_candidates, estimates]
+  production_feedback:
+    input: [order, production_result]
+    steps: [record_result, compare_estimates, store_evidence, update_provider_features]
+    output: [production_evidence]
+
+interfaces:
+  upstream: [fashion, sales, intelligence]
+  downstream: [aw, bqml]
+
+boundaries:
+  manufacturing: owns_provider_and_production_knowledge
+  fashion: owns_product_semantics
+  bqml: owns_learned_estimates
+  aw: owns_execution
+  external_vendors: own_physical_production
+
+governance:
+  observed: production_fact
+  inferred: learned_estimate
+  proposed: provider_candidate
+  validated: verified_provider_or_result
+  declared: manufacturing_domain
+  source_of_truth: domain_yaml
+
+core_principle: >
+  Manufacturing is a reusable capability domain. It does not own the
+  meaning of products; it owns how products can be made and measured.
