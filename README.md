@@ -1,159 +1,335 @@
 # bonsai/ecosystem.md
 
-Bonsai repository ecosystem map.
+Bonsai ecosystem architecture.
 
-## Purpose
+## Design principle
 
-Bonsai is organized as a network of repositories with explicit semantic responsibilities. This repository is the **ecosystem index**: it describes how repositories provide, consume, observe, analyze, generate, execute, and verify one another.
-
-## Core loop
+Bonsai is a **loosely coupled semantic ecosystem**. The system is divided into three primary layers:
 
 ```text
-observe → understand → intend → plan → generate → execute → evidence → evaluate → re-intend
+┌──────────────────────────────────────────┐
+│ DEFINITIONS / ONTOLOGY                   │
+│ What things mean                         │
+│ concepts · entities · relations · rules │
+└────────────────────┬─────────────────────┘
+                     │ semantic contract
+┌────────────────────▼─────────────────────┐
+│ TOOLS                                    │
+│ What can be done                         │
+│ APIs · CLIs · libraries · data systems  │
+└────────────────────┬─────────────────────┘
+                     │ capabilities
+┌────────────────────▼─────────────────────┐
+│ AGENTS                                   │
+│ Who decides / coordinates / acts         │
+│ intent · plan · policy · execution       │
+└──────────────────────────────────────────┘
 ```
 
-## Relationship vocabulary
+The layers communicate through **stable contracts**, not direct implementation dependencies.
 
-| Relation | Meaning |
-|---|---|
-| `defines` | Owns the canonical semantic model or contract |
-| `provides` | Produces data, ontology, specification, or capability |
-| `consumes` | Uses another repository's contract or output |
-| `observes` | Reads or monitors external state |
-| `analyzes` | Derives metrics, classifications, or inference |
-| `specializes` | Implements a domain-specific specialization |
-| `plans` | Converts intent into an executable strategy |
-| `generates` | Creates agent or workflow definitions |
-| `executes` | Runs plans, agents, or workflows |
-| `produces` | Emits artifacts, evidence, or outcomes |
-| `verifies` | Validates results against intent or constraints |
+## 1. Definitions / Ontology layer
 
-## Repository roles
+The ontology layer defines vocabulary and meaning. It must not depend on a particular runtime, CLI, model, or workflow engine.
 
-| Repository | Primary role | Main relations |
+| Repository | Responsibility | Relation |
 |---|---|---|
-| `bonsai/intent` | Intent ontology / semantic IR | `defines` |
-| `bonsai/world-ontology` | World, domain, object, and context vocabulary | `provides`, `specializes` |
-| `bonsai/wiki` | Human-curated knowledge and concepts | `provides`, `consumes` |
-| `bonsai/repos` | Repository observatory and repository-state data | `observes`, `provides`, `produces` |
-| `bonsai/think` | Reasoning and planning methods | `consumes`, `plans`, `produces` |
-| `bonsai/yaml-as-agent` | Declarative agent representation / compiler boundary | `consumes`, `generates` |
-| `bonsai/agent` | Agent model and execution layer | `consumes`, `executes`, `produces` |
-| `bonsai/aw` | Agentic Workflow generation and execution | `generates`, `executes`, `produces` |
-| `bonsai/ds-agent` | Data analysis / BQML evidence layer | `analyzes`, `produces`, `verifies` |
-| `bonsai/company` | Organizational context for an agent collective | `provides`, `consumes` |
-| `bonsai/aw.tui` | Operational interface for AW graphs and workflows | `consumes`, `observes` |
+| `bonsai/intent` | Intent, Goal, Actor, Context, Constraint, Plan, Outcome, Evidence | `defines` |
+| `bonsai/world-ontology` | World, domain, object, context vocabulary | `defines` / `provides` |
+| `bonsai/wiki` | Human-curated concepts and knowledge | `provides` |
+| `bonsai/ecosystem.md` | Ecosystem relationship vocabulary and map | `defines` |
 
-## Semantic architecture
+### Ontology rule
 
 ```text
-                         ┌──────────────────────┐
-                         │    bonsai/intent     │
-                         │  Semantic Control    │
-                         │       Plane          │
-                         └──────────┬───────────┘
-                                    │
-          ┌──────────────┬──────────┼──────────┬──────────────┐
-          ▼              ▼          ▼          ▼              ▼
-   world-ontology      wiki       repos      think         company
-   context/vocab     knowledge   observe    reason        organize
-          │              │          │          │              │
-          └──────────────┴──────────┼──────────┴──────────────┘
-                                    ▼
-                            yaml-as-agent
-                                    │
-                                    ▼
-                                  agent
-                                    │
-                                    ▼
-                                    aw
-                                    │
-                                    ▼
-                           GitHub Workflows
-                                    │
-                                    ▼
-                         Evidence / Outcome
-                                    │
-                       ┌────────────┴────────────┐
-                       ▼                         ▼
-                   ds-agent                 repos / wiki
-                   analyze                 feedback/index
+Ontology MUST NOT know:
+  - which LLM is used
+  - which CLI executes an action
+  - which GitHub Workflow runs it
+  - where runtime state is stored
 ```
 
-## repo2agent path
+Ontology describes **meaning**, not implementation.
 
-The ecosystem supports the following compilation path:
+## 2. Tools / Capability layer
+
+Tools are capabilities that can be invoked by agents. A tool should have a clear input/output contract and should not contain business intent.
+
+| Repository | Responsibility | Relation |
+|---|---|---|
+| `bonsai/repos` | Repository observation and repository-state data | `observes` / `provides` |
+| `bonsai/ds-agent` | Data analysis and BQML capabilities | `analyzes` / `provides` |
+| `bonsai/aw.tui` | Operational inspection and workflow interface | `provides` / `observes` |
+| GitHub Actions / AW | Workflow execution capability | `executes` |
+
+Tools answer:
+
+> **What operation is available?**
+
+They do not answer:
+
+> **Why should we perform it?**
+
+That decision belongs to the intent/agent layer.
+
+## 3. Agent layer
+
+Agents consume ontology and tools. Agents are responsible for interpreting intent, planning, selecting capabilities, coordinating work, and evaluating outcomes.
+
+| Repository | Responsibility | Relation |
+|---|---|---|
+| `bonsai/think` | Reasoning and planning methods | `plans` |
+| `bonsai/yaml-as-agent` | Declarative agent representation / compilation boundary | `generates` |
+| `bonsai/agent` | Agent model and organizational/execution abstraction | `defines` / `coordinates` |
+| `bonsai/aw` | Agentic Workflow generation and execution | `generates` / `executes` |
+| `bonsai/company` | Organization / collective-agent context | `organizes` |
+
+Agents answer:
+
+> **What should be done, in what order, using which capabilities, and how do we know it succeeded?**
+
+## 4. Domain agents
+
+Domain-specific repositories should specialize the agent layer without modifying the foundational ontology.
+
+```text
+              foundational ontology
+                       │
+             ┌─────────┴─────────┐
+             ▼                   ▼
+          intent          world-ontology
+             │                   │
+             └─────────┬─────────┘
+                       ▼
+                  domain agent
+                       │
+             ┌─────────┼─────────┐
+             ▼         ▼         ▼
+          tools      plans     policies
+```
+
+Examples include domain-oriented agent repositories such as `bonsai/quiz-agents`, `bonsai/bon-anima`, and `bonsai/mala-agent`.
+
+A domain agent **specializes** the ontology; it does not fork or redefine the foundational meaning of `Intent`, `Goal`, `Actor`, etc.
+
+## 5. Loose-coupling contract
+
+Dependencies should point through contracts:
+
+```text
+             DEFINITIONS
+             ontology
+                 │
+                 │ semantic contract
+                 ▼
+              AGENTS
+                 │
+                 │ capability contract
+                 ▼
+               TOOLS
+                 │
+                 │ evidence / result
+                 ▼
+             DEFINITIONS
+```
+
+The important rule is:
+
+```text
+Ontology ← Agent → Tool
+```
+
+rather than:
+
+```text
+Ontology → Tool implementation → Agent implementation
+```
+
+This allows any layer to evolve independently.
+
+## 6. Canonical contracts
+
+### Intent contract
+
+`bonsai/intent` defines the semantic contract:
+
+```yaml
+intent:
+  actor: Actor
+  goal: Goal
+  object: Object
+  context: Context
+  constraints: Constraint[]
+  plan: Plan
+  actions: Action[]
+  expected_outcomes: Outcome[]
+  evidence: Evidence[]
+```
+
+### Tool contract
+
+Tools expose capabilities independently of the agent that calls them:
+
+```yaml
+tool:
+  id: repository.observe
+  input: Repository
+  output: RepositoryObservation
+  side_effects: read-only
+```
+
+### Agent contract
+
+Agents consume intents and capabilities:
+
+```yaml
+agent:
+  id: repository-observer
+  accepts: Intent
+  uses:
+    - repository.observe
+  produces:
+    - Evidence
+    - Outcome
+```
+
+## 7. repo2agent
+
+`repo2agent` is a transformation across the boundaries:
 
 ```text
 Repository
-   ↓
-Repository facts / README / structure
-   ↓
-Ontology
-   ↓
+    │
+    ▼
+Repository facts
+    │
+    ▼
+Ontology / Definitions
+    │
+    ▼
 Intent IR
-   ↓
-Plan
-   ↓
+    │
+    ▼
 Agent definition
-   ↓
-AW workflow
-   ↓
-Execution
-   ↓
+    │
+    ▼
+Tool selection
+    │
+    ▼
+AW Workflow
+    │
+    ▼
 Evidence / Outcome
-   ↓
-Repository state
-   ↓
-Re-intent
 ```
 
-`bonsai/aw` acts as the **Agent Midwife**: it should turn repository semantics and approved intent into executable workflow candidates rather than inventing business intent by itself.
+`bonsai/aw` should act as the **Agent Midwife**: it turns approved semantic intent and agent definitions into executable workflow candidates. It should not invent the underlying business intent.
 
-## Boundary principle
-
-`bonsai/intent` is not the runtime and not the repository database.
-
-- `intent` answers **what / why / under which constraints**.
-- `think` answers **how to reason and plan**.
-- `yaml-as-agent` answers **how to represent/compile an agent declaratively**.
-- `agent` answers **what an agent is and how it operates**.
-- `aw` answers **how an approved agent/workflow is executed**.
-- `repos` answers **what repository state is observed**.
-- `ds-agent` answers **what can be inferred from data**.
-- `world-ontology` answers **what the domain objects and contexts mean**.
-- `wiki` answers **what humans have recorded as knowledge**.
-
-This separation keeps the ontology stable while implementations evolve independently.
-
-## Feedback loop
+## 8. Closed-loop organization
 
 ```text
+observe
+   ↓
+understand
+   ↓
 intent
-  ↓
-execution
-  ↓
+   ↓
+plan
+   ↓
+agent
+   ↓
+tool
+   ↓
+execute
+   ↓
 evidence
-  ↓
-analysis
-  ↓
-evaluation
-  ↓
-new / revised intent
+   ↓
+evaluate
+   ↓
+re-intent
 ```
 
-The ecosystem is therefore a **closed-loop agent organization**, not a static dependency graph.
+The loop is closed through evidence and outcomes, while the ontology remains stable.
 
-## Related repositories
+## 9. Boundary rules
 
-- [`bonsai/intent`](https://github.com/bonsai/intent)
-- [`bonsai/world-ontology`](https://github.com/bonsai/world-ontology)
-- [`bonsai/wiki`](https://github.com/bonsai/wiki)
-- [`bonsai/repos`](https://github.com/bonsai/repos)
-- [`bonsai/think`](https://github.com/bonsai/think)
-- [`bonsai/yaml-as-agent`](https://github.com/bonsai/yaml-as-agent)
-- [`bonsai/agent`](https://github.com/bonsai/agent)
-- [`bonsai/aw`](https://github.com/bonsai/aw)
-- [`bonsai/ds-agent`](https://github.com/bonsai/ds-agent)
-- [`bonsai/company`](https://github.com/bonsai/company)
-- [`bonsai/aw.tui`](https://github.com/bonsai/aw.tui)
+### Ontology
+
+- Defines meaning.
+- Owns canonical vocabulary.
+- Is implementation-independent.
+- Does not execute actions.
+- Does not select an LLM.
+
+### Tools
+
+- Provide capabilities.
+- Have explicit input/output contracts.
+- May read or modify external systems.
+- Do not own business intent.
+- Should be replaceable.
+
+### Agents
+
+- Interpret and pursue intents.
+- Select and coordinate tools.
+- Create or follow plans.
+- Evaluate evidence and outcomes.
+- May be replaced without changing the ontology.
+
+### Workflow runtime
+
+- Executes approved plans.
+- Provides operational guarantees.
+- Emits execution evidence.
+- Is not the semantic source of truth.
+
+## 10. Ecosystem relationship vocabulary
+
+| Relation | Meaning |
+|---|---|
+| `defines` | Owns a canonical definition or semantic contract |
+| `provides` | Provides a capability, data, vocabulary, or artifact |
+| `consumes` | Uses another layer's contract or output |
+| `observes` | Reads external state |
+| `analyzes` | Derives metrics, classifications, or inference |
+| `specializes` | Extends a foundational definition for a domain |
+| `plans` | Converts intent into strategy |
+| `generates` | Creates an agent or workflow definition |
+| `executes` | Performs an operation or workflow |
+| `produces` | Emits an artifact, evidence, or outcome |
+| `verifies` | Validates a result against intent or constraints |
+| `coordinates` | Orchestrates agents or capabilities |
+| `organizes` | Defines relationships among agents |
+
+## 11. Repository map
+
+```text
+DEFINITIONS / ONTOLOGY
+├── bonsai/intent
+├── bonsai/world-ontology
+├── bonsai/wiki
+└── bonsai/ecosystem.md
+
+TOOLS / CAPABILITIES
+├── bonsai/repos
+├── bonsai/ds-agent
+├── bonsai/aw.tui
+└── GitHub Actions / AW runtime
+
+AGENTS / ORGANIZATION
+├── bonsai/think
+├── bonsai/yaml-as-agent
+├── bonsai/agent
+├── bonsai/aw
+├── bonsai/company
+└── domain agents
+    ├── bonsai/quiz-agents
+    ├── bonsai/bon-anima
+    └── bonsai/mala-agent
+```
+
+## Core principle
+
+> **Definitions describe the world. Tools provide capabilities. Agents choose and coordinate capabilities to realize intent.**
+
+Keeping these three concerns separate is the foundation of Bonsai's loose coupling and allows ontology, tooling, agents, models, and workflow runtimes to evolve independently.
