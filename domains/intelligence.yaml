@@ -1,0 +1,92 @@
+api_version: "v1"
+id: intelligence
+name: Intelligence Ecosystem
+version: "0.1"
+description: >
+  Reasoning, agents, organizations, planning and declarative agent
+  representations used to turn semantic contracts and evidence into plans.
+
+principles:
+  domain: semantic_cluster
+  agent: decision_actor
+  organization: coordination_structure
+  plan: intended_action
+  evidence: observed_outcome
+
+repos:
+  bonsai/agent:
+    role: agent_model
+    capabilities: [actor, role, decision]
+  bonsai/soshiki:
+    role: agent_organization
+    capabilities: [coordination, delegation, organization]
+  bonsai/yaml-as-agent:
+    role: declarative_agent_representation
+    capabilities: [agent_yaml, schema, repo2agent]
+  bonsai/think:
+    role: reasoning_methods
+    capabilities: [reasoning, planning, decision_methods]
+  bonsai/ds-agent:
+    role: analytical_agent
+    capabilities: [data_analysis, model_interpretation]
+
+capabilities:
+  reasoning: [analysis, planning, hypothesis, evaluation]
+  agents: [role_definition, decision, delegation]
+  organization: [coordination, routing, specialization]
+  translation: [repo2agent, yaml_to_agent, domain_to_workflow]
+
+entities:
+  - agent
+  - role
+  - organization
+  - plan
+  - decision
+  - task
+  - capability
+  - evidence
+  - workflow
+
+relations:
+  has_role: [agent, role]
+  belongs_to: [agent, organization]
+  has_capability: [agent, capability]
+  reasons_from: [decision, evidence]
+  produces: [agent, plan]
+  delegates: [organization, task]
+  executes: [agent, workflow]
+  validated_by: [decision, evidence]
+
+workflows:
+  repo2agent:
+    input: [repository_facts, domain_contract]
+    steps: [observe, classify, infer_capabilities, propose_agent, validate]
+    output: [agent_definition]
+  plan_to_workflow:
+    input: [goal, agent_plan, domain_contract]
+    steps: [decompose, select_capabilities, select_agents, generate_workflow, validate]
+    output: [workflow_candidate]
+
+interfaces:
+  upstream: [ecosystem, ontology, bqml, repos]
+  downstream: [aw, domain_workflows]
+
+boundaries:
+  intelligence: owns reasoning_and_coordination
+  ontology: owns canonical meaning
+  bqml: owns statistical learning
+  aw: owns execution
+  real_world: owns observed outcomes
+
+governance:
+  observed: repository_or_world_fact
+  inferred: reasoning_result
+  proposed: agent_or_workflow_candidate
+  validated: reviewed_agent_or_plan
+  declared: intelligence_domain
+  source_of_truth: domain_yaml
+
+core_principle: >
+  Intelligence decides and coordinates. It may propose new agents and
+  workflows, but canonical meaning remains in semantic domains and actual
+  execution remains in AW and the real world.
