@@ -1,0 +1,122 @@
+# Bonsai Ecosystem — Problem Solving Ontology
+
+id: solve
+name: Solve
+version: "0.1.0"
+
+description: >
+  共通の問題解決プロトコル。現実をAwareし、Intentを定義し、Thinkし、
+  Intelligenceを適用し、AXで人間とAgentの協働を設計し、FDEで現場実装し、
+  Outcomeを測定してFeedbackを次のAwareへ戻す。
+
+pipeline:
+  - aware
+  - intent
+  - think
+  - intelligence
+  - ax
+  - fde
+  - outcome
+  - feedback
+
+domains:
+  aware:
+    repo: bonsai/Aware.md
+    role: observation
+    question: "What is happening?"
+    outputs: [situation, problem_candidate, evidence]
+
+  intent:
+    repo: bonsai/intent
+    role: goal_definition
+    question: "What do we want to achieve?"
+    outputs: [goal, intent, constraints, success_criteria]
+
+  think:
+    repo: bonsai/think
+    role: reasoning
+    question: "How should we solve it?"
+    outputs: [hypothesis, options, plan, decision]
+
+  intelligence:
+    repo: bonsai/intelligence
+    role: knowledge_and_learning
+    question: "What knowledge improves the decision?"
+    outputs: [insight, pattern, prediction, recommendation]
+
+  ax:
+    repo: bonsai/AX
+    role: human_agent_experience
+    question: "How should humans and agents work together?"
+    outputs: [workflow, agent_role, human_role, interaction, tool_selection]
+
+  fde:
+    repos:
+      - bonsai/fde-agent
+      - bonsai/fdes-orchestra
+    role: field_execution
+    question: "How do we create value in the real world?"
+    outputs: [implementation, operation, outcome, feedback]
+
+  outcome:
+    role: measurement
+    question: "Did it work?"
+    outputs: [result, metrics, roi, lessons]
+
+  feedback:
+    role: learning_loop
+    question: "What should change next?"
+    outputs: [updated_knowledge, updated_intent, new_problem]
+    next: aware
+
+relations:
+  - {from: aware, to: intent, relation: informs}
+  - {from: intent, to: think, relation: constrains}
+  - {from: think, to: intelligence, relation: queries}
+  - {from: intelligence, to: think, relation: improves}
+  - {from: think, to: ax, relation: produces_plan}
+  - {from: ax, to: fde, relation: enables}
+  - {from: fde, to: outcome, relation: produces}
+  - {from: outcome, to: feedback, relation: generates}
+  - {from: feedback, to: aware, relation: updates}
+
+lifecycle:
+  - detect
+  - define
+  - reason
+  - design
+  - execute
+  - measure
+  - learn
+
+solve_unit:
+  required:
+    - problem
+    - context
+    - intent
+    - evidence
+    - plan
+    - action
+    - outcome
+  optional:
+    - agent
+    - human
+    - tool
+    - model
+    - hypothesis
+    - experiment
+    - roi
+
+success:
+  primary: [outcome, measurable_value, user_value]
+  secondary:
+    - time_saved
+    - cost_reduced
+    - quality_improved
+    - knowledge_created
+    - automation_increased
+
+axiom: >
+  Sense reality -> define intent -> think -> apply intelligence ->
+  design human-agent collaboration -> execute in the field ->
+  measure value -> learn -> sense again.
