@@ -1,341 +1,235 @@
-# bonsai/ecosystem.md
+# bonsai/ecosystem
 
-Bonsai ecosystem architecture and **declarative Repository Semantic Registry**.
+**Bonsai Ecosystem** is the declarative semantic registry for the Bonsai repository federation.
 
-## Four ecosystems
+> **Many independent repositories, one coherent ecosystem — without becoming a monolith.**
 
-Bonsai is a federation of four loosely coupled ecosystems. Each has one responsibility and a clear boundary.
-
-```text
-① SEMANTIC       ② AGENT          ③ EXECUTION       ④ REAL WORLD
-Meaning / Why  →  Decide / Who  →  Act / How     →  State / Outcome
-     ↑                                                    │
-     └──────────────── evidence / feedback ──────────────┘
-```
-
-### ① Semantic Ecosystem — 「意味」
-
-**Question: What is it? Why does it exist?**
-
-Owns vocabulary, ontology, intent, concepts, domain models, and semantic contracts.
-
-Representative repositories:
-- `bonsai/ecosystem.md` — repository semantic registry
-- `bonsai/intent` — intent / semantic IR
-- `bonsai/world-ontology` — world and domain vocabulary
-- `bonsai/wiki` — human-curated knowledge
-- `bonsai/company` — organizational purpose and context
-- `bonsai/think` — reasoning and planning methods
-
-**Boundary:** defines meaning; does not execute runtime operations.
-
-### Domain clustering
-
-Repositories should remain independently deployable and independently responsible. **Do not merge repositories merely because they belong to the same business domain.** Instead, `ecosystem.md` clusters them semantically.
+## Architecture
 
 ```text
-                         SEMANTIC REGISTRY
-                                │
-        ┌───────────────────────┼────────────────────────┐
-        │                       │                        │
-     FASHION                  CRAFT                    OTHER
-        │                       │                        │
-   ┌────┼────┐             ┌────┼────┐             ┌────┼────┐
- socks  aloha textile     amimono shishu          food  home  education
-   │      │      │            │       │
-   └──────┴──────┴────────────┴───────┴──→ shared capabilities
+                 SEMANTIC / DOMAINS
+                 meaning / contracts
                          │
-                    bonsai/oem
-                    bonsai/aw
-                    bonsai/etsy
+                         ▼
+                 INTELLIGENCE
+                 think / agents / plans
+                         │
+                         ▼
+                   EXECUTION
+                 AW / tools / FDE
+                         │
+                         ▼
+                  REAL WORLD
+              state / product / outcome
+                         │
+                         └──── feedback ───► semantic review
+
+                 BQML = learning across the loop
 ```
 
-The first-level cluster is the **domain**, while repositories are the **responsibility-bearing nodes** inside that domain.
+| Layer | Question | Owns |
+|---|---|---|
+| **Semantic** | What / Why? | domains, ontology, intent, contracts |
+| **Intelligence** | Who / Decide? | agents, reasoning, organizations, plans |
+| **Execution** | How? | workflows, tools, operations, FDE |
+| **Real World** | What happened? | observations, products, production, outcomes |
+| **BQML** | What can we learn? | models, clusters, predictions, anomalies, learned evidence |
 
-Recommended semantic registry shape:
+BQML is a learning layer, **not** a fifth ownership boundary and not the source of truth.
 
-```yaml
-domains:
-  fashion:
-    description: apparel, textile, accessories and personal customization
-    repos:
-      - bonsai/socks
-      - bonsai/aloha
-      - bonsai/textile
-      - bonsai/costume-generation
-      - bonsai/shishu
-      - bonsai/amimono
+## Domains
 
-  manufacturing:
-    description: production capability and provider network
-    repos:
-      - bonsai/oem
-      - bonsai/textile
-      - bonsai/shishu
-      - bonsai/amimono
-
-  sales:
-    description: product listing, commerce and fulfillment interfaces
-    repos:
-      - bonsai/etsy
-
-  intelligence:
-    description: reasoning, agents and organizational intelligence
-    repos:
-      - bonsai/think
-      - bonsai/agent
-      - bonsai/soshiki
-      - bonsai/yaml-as-agent
-
-  execution:
-    description: workflow and operational coordination
-    repos:
-      - bonsai/aw
-      - bonsai/aw.tui
-```
-
-### Clustering rules
-
-1. **Repo = responsibility** — one repo should have a clear reason to exist.
-2. **Domain = semantic cluster** — a domain groups related repos without absorbing them.
-3. **Capability = reusable connection** — OEM, workflow, sales, AI, data, etc. can cross domains.
-4. **Do not force a single tree** — a repo may belong to multiple clusters through explicit roles.
-5. **Evidence over intuition** — observed repository facts come from `bonsai/repos`; semantic classification lives here.
-6. **AI may propose clusters, but the registry declares them** — inference is not canonical meaning.
-
-This makes future domains cheap to add:
+Canonical domain definitions live in [`domains/`](./domains/).
 
 ```text
-fashion ─┐
-food ────┤
-home ────┤
-craft ───┼──→ domain cluster → capabilities → agents → workflows → real world
-education┤
-services ┘
+domains/
+├── architecture.yaml
+├── bqml.yaml
+├── fashion.yaml
+├── game.yaml
+├── intelligence.yaml
+├── manufacturing.yaml
+├── sales.yaml
+└── solve.yaml
 ```
 
-### ② Agent Ecosystem — 「知性」
+A **domain is a semantic cluster, not a repository container**. A repository can participate in multiple domains through explicit roles.
 
-**Question: Who reasons, decides, plans, and coordinates?**
+## Solve: the cross-domain protocol
 
-Owns actors, roles, plans, delegation, organizations, and agent behavior.
-
-Representative repositories:
-- `bonsai/agent` — agent model / actor
-- `bonsai/soshiki` — agent organization and coordination
-- `bonsai/yaml-as-agent` — declarative agent representation
-- `bonsai/ds-agent` — analytical agent / evidence interpretation
-
-**Boundary:** agents decide and coordinate; they do not redefine canonical meaning.
-
-### ③ Execution Ecosystem — 「実行」
-
-**Question: How does a decision become an operation?**
-
-Owns workflows, tool invocation, automation, and operational interfaces.
-
-Representative repositories:
-- `bonsai/aw` — Agentic Workflows
-- `bonsai/aw.tui` — operational interface
-- GitHub / Git / CLI / Python / Go / MCP — capabilities and interfaces
+[`domains/solve.yaml`](./domains/solve.yaml) defines the common problem-solving loop:
 
 ```text
-Agent    = actor / decision maker
-Tool     = capability
-Workflow = execution
+Aware → Intent → Think ↔ Intelligence → AX → FDE
+  ↑                                      ↓
+  └──── Feedback ← Outcome ←────────────┘
 ```
 
-**Boundary:** executes approved plans; it does not own business meaning.
+Repository bindings:
 
-### ④ Real-World Ecosystem — 「現実」
-
-**Question: What exists, changes, gets produced, and actually happened?**
-
-Owns observations, repository state, databases, products, production processes, vendors, and outcomes.
-
-Representative repositories:
-- `bonsai/repos` — repository observatory
-- database / BigQuery / BQML — state, evidence, metrics
-- `bonsai/costume-generation` — product/costume composition
-- `bonsai/textile` — textile production IR
-- `bonsai/amimono` — knitting production
-- `bonsai/shishu` — embroidery production
-- external vendors / factories — production boundary
-
-**Boundary:** supplies observed state and outcomes; it is not the authority for abstract semantics.
-
-## BQML Ecosystem — 「学習」
-
-BQML is the **learning layer across the four ecosystems**, not a fifth ownership boundary.
-
-```text
-Real World
-    ↓ observations
-BigQuery
-    ↓ analytical projection
-Ontology ─── Synapse
-    ↓           ↓
-      Matrix (Go)
-           ↓
-         BQML
-    ┌──────┼──────┐
-    ↓      ↓      ↓
-  cluster predict learn
-    └──────┼──────┘
-           ↓
-    learned evidence
-           ↓
-      Matrix / Agents
-           ↓
-       Real World
-```
-
-Responsibilities:
-
-| Component | Responsibility |
+| Stage | Repository |
 |---|---|
-| `bonsai/repos` | observe repository facts |
-| `bonsai/ontology` | define meaning and semantic contracts |
-| `bonsai/synapse` | define weighted relationships |
-| `bonsai/matrix` | compute vectors, matrices, scores and features in Go |
-| BigQuery | retain analytical projections and evidence |
-| BQML | learn clusters, predictions, anomalies, forecasts and weights |
-| Agents | act on learned evidence |
+| Aware | `bonsai/Aware.md` |
+| Intent | `bonsai/intent` |
+| Think | `bonsai/think` |
+| Intelligence | `bonsai/intelligence` |
+| AX | `bonsai/AX` |
+| FDE | `bonsai/fde-agent`, `bonsai/fdes-orchestra` |
 
-Core rule:
+`solve` integrates these responsibilities; it does **not** merge the repositories.
 
-> **BQML is not the source of truth.** It learns from projections of observed data, Ontology, Synapse and Matrix, then returns learned evidence and weights to the ecosystem.
+## Intelligence
 
-Governance remains:
+[`domains/intelligence.yaml`](./domains/intelligence.yaml) defines the intelligence cluster:
+
+```text
+repository facts + semantic contracts
+              ↓
+            Think
+              ↓
+      Intelligence / Agents
+              ↓
+        plan / decision
+              ↓
+             AW
+              ↓
+         real world
+              ↓
+           evidence
+```
+
+Representative repositories:
+
+- `bonsai/agent` — agent model
+- `bonsai/soshiki` — organization / coordination
+- `bonsai/yaml-as-agent` — declarative agents / repo2agent
+- `bonsai/think` — reasoning and planning methods
+- `bonsai/ds-agent` — analytical agent
+
+## repo2agent
+
+A core ecosystem pattern is **repo2agent**:
+
+```text
+Repository
+    ↓
+observed facts
+    ↓
+semantic classification
+    ↓
+capabilities
+    ↓
+agent proposal
+    ↓
+validation
+    ↓
+agent definition
+    ↓
+workflow
+    ↓
+execution
+    ↓
+outcome / evidence
+```
+
+> **Observation is not meaning. Inference is not declaration.**
+
+AI can propose classifications, agents, relationships and workflows. Canonical meaning becomes authoritative only after validation and declaration in domain YAML.
+
+## Evidence and learning
 
 ```text
 observed → inferred → proposed → validated → declared
 ```
 
-The canonical declaration belongs to the semantic layer; ML output is evidence until validated.
-
-The full declarative definition is maintained in `bqml.yaml`.
-
-## Responsibility matrix
-
-| Ecosystem | Core question | Owns | Does not own |
-|---|---|---|---|
-| Semantic | What / Why? | meaning, ontology, intent, contracts | runtime state, execution |
-| Agent | Who / Decide? | actors, roles, plans, coordination | canonical ontology, raw state |
-| Execution | How? | workflows, tools, operations | business meaning |
-| Real World | What happened? | observations, products, production, outcomes | canonical meaning |
-| BQML learning | What can we learn? | models, clusters, predictions, learned weights | source-of-truth meaning |
-
-## Four-ecosystem loop
+Repository facts should come from `bonsai/repos`. Analytical projections belong in BigQuery. BQML can discover clusters, predict outcomes, detect anomalies and learn weights, but its output remains evidence until validated.
 
 ```text
-┌──────────────────┐
-│ ① SEMANTIC       │  meaning / intent / ontology
-└────────┬─────────┘
-         │ contract
-         ▼
-┌──────────────────┐
-│ ② AGENT          │  decide / plan / coordinate
-└────────┬─────────┘
-         │ plan
-         ▼
-┌──────────────────┐
-│ ③ EXECUTION      │  workflow / tool / operation
-└────────┬─────────┘
-         │ action
-         ▼
-┌──────────────────┐
-│ ④ REAL WORLD     │  data / product / outcome
-└────────┬─────────┘
-         │ evidence
-         └──────────────────► semantic review
+repos → BigQuery → BQML
+  ↑                  │
+  └──── evidence ←──┘
 ```
 
-This is a closed learning loop, not a tightly coupled software stack.
+## Domain examples
 
-## Existing architectural layers
-
-The four ecosystems are the **top-level boundaries**. Existing layers fit inside them:
-
-| Ecosystem | Layers |
-|---|---|
-| Semantic | 思想層 + 定義層 |
-| Agent | 実装層 / agent organization |
-| Execution | 実装層 + 道具層 + 通信層 |
-| Real World | データ層 + physical production |
-| BQML learning | BigQuery projection + ML + evidence |
-
-## Manufacturing example
+### Fashion / Manufacturing
 
 ```text
-SEMANTIC
-  costume / garment / embroidery / knitting
-        ↓
-AGENT
-  design agent / production planner
-        ↓
-EXECUTION
-  AW → textile IR → amimono / shishu adapter
-        ↓
-REAL WORLD
-  vendor → machine → garment → production result
-        ↓
-  quality / cost / lead-time evidence
+fashion
+  ├── costume-generation
+  ├── textile
+  ├── amimono
+  └── shishu
+          │
+          ▼
+    manufacturing
+          │
+          ▼
+         OEM
 ```
 
-Therefore:
-- `costume-generation` = **what should be made**
-- `textile` = **common production representation**
-- `amimono` / `shishu` = **knitting / embroidery specialization**
-- `vendor` = **who/what can make it**
-- `aw` = **coordinates execution**
+The registry connects these repositories semantically; it does not absorb them into one repository.
 
-The vendor is an external production system, not part of the costume ontology.
+### Sales
 
-## Declaration vs observation
+Sales owns the commerce boundary such as product listing and fulfillment interfaces. It can consume fashion and manufacturing capabilities without owning their ontology.
+
+### Architecture
+
+Architecture describes structural and system-level relationships. It does not replace the repositories that implement those components.
+
+## Design principles
+
+1. **Repo = responsibility.** Every repository has a clear reason to exist.
+2. **Domain = meaning.** Domains group responsibilities without absorbing repositories.
+3. **Capability = reusable function.** Capabilities can cross domain boundaries.
+4. **Many-to-many is valid.** Do not force the ecosystem into one tree.
+5. **Evidence first.** Observe repository facts before classifying them.
+6. **Inference is provisional.** AI/ML may propose; validation makes meaning canonical.
+7. **Execution stays separate.** Semantic definitions should not become runtime coupling.
+8. **Feedback closes the loop.** Outcomes improve future decisions.
+9. **Optimize for value.** Measure time, cost, quality, automation, knowledge and ROI.
+10. **Keep repositories independently useful.** The ecosystem coordinates; it does not create a monolith.
+
+## Repository map
 
 ```text
-ecosystem  = what we declare
-repos      = what we observe
-database   = what we retain
-analysis   = what we infer
-BQML       = what we learn
+bonsai/ecosystem
+│
+├── domains/                 # canonical domain declarations
+│   ├── architecture.yaml
+│   ├── bqml.yaml
+│   ├── fashion.yaml
+│   ├── game.yaml
+│   ├── intelligence.yaml
+│   ├── manufacturing.yaml
+│   ├── sales.yaml
+│   └── solve.yaml
+│
+└── README.md                # architecture, registry rules, contracts
 ```
 
-`ecosystem` remains declarative-first. AI inference may improve the registry later, but does not become the initial authority for repository meaning.
-
-## repo2agent
+## Relationship to the Bonsai federation
 
 ```text
-Repository facts
-      ↓
-repos observation
-      ↓
-ecosystem semantic declaration
-      ↓
-Intent / Ontology IR
-      ↓
-Agent definition
-      ↓
-soshiki organization
-      ↓
-AW workflow
-      ↓
-Tool / vendor execution
-      ↓
-Evidence / outcome
-      ↓
-BigQuery
-      ↓
-BQML learning
-      ↓
-semantic review
+ecosystem
+   │
+   ├── domains / contracts
+   │
+   ├──────────────► intent / think / intelligence / AX / FDE
+   │
+   ├──────────────► repos / ontology / synapse / matrix
+   │
+   └──────────────► aw / domain workflows
+                         │
+                         ▼
+                    real world
 ```
 
-`repo2agent` starts from facts but does not confuse facts with meaning.
+`bonsai/ecosystem` is therefore a **registry and contract layer**, not an application runtime.
 
 ## Core principle
 
-> **Four ecosystems, four responsibilities: meaning defines, agents decide, execution acts, reality proves; BQML learns across the loop.**
+> **Meaning defines. Intelligence decides. Execution acts. Reality proves. BQML learns. Feedback improves the next decision.**
 
-The ecosystems communicate through explicit contracts and evidence rather than direct ownership of one another.
+That is the Bonsai Ecosystem.
