@@ -29,6 +29,91 @@ Representative repositories:
 
 **Boundary:** defines meaning; does not execute runtime operations.
 
+### Domain clustering
+
+Repositories should remain independently deployable and independently responsible. **Do not merge repositories merely because they belong to the same business domain.** Instead, `ecosystem.md` clusters them semantically.
+
+```text
+                         SEMANTIC REGISTRY
+                                │
+        ┌───────────────────────┼────────────────────────┐
+        │                       │                        │
+     FASHION                  CRAFT                    OTHER
+        │                       │                        │
+   ┌────┼────┐             ┌────┼────┐             ┌────┼────┐
+ socks  aloha textile     amimono shishu          food  home  education
+   │      │      │            │       │
+   └──────┴──────┴────────────┴───────┴──→ shared capabilities
+                         │
+                    bonsai/oem
+                    bonsai/aw
+                    bonsai/etsy
+```
+
+The first-level cluster is the **domain**, while repositories are the **responsibility-bearing nodes** inside that domain.
+
+Recommended semantic registry shape:
+
+```yaml
+domains:
+  fashion:
+    description: apparel, textile, accessories and personal customization
+    repos:
+      - bonsai/socks
+      - bonsai/aloha
+      - bonsai/textile
+      - bonsai/costume-generation
+      - bonsai/shishu
+      - bonsai/amimono
+
+  manufacturing:
+    description: production capability and provider network
+    repos:
+      - bonsai/oem
+      - bonsai/textile
+      - bonsai/shishu
+      - bonsai/amimono
+
+  sales:
+    description: product listing, commerce and fulfillment interfaces
+    repos:
+      - bonsai/etsy
+
+  intelligence:
+    description: reasoning, agents and organizational intelligence
+    repos:
+      - bonsai/think
+      - bonsai/agent
+      - bonsai/soshiki
+      - bonsai/yaml-as-agent
+
+  execution:
+    description: workflow and operational coordination
+    repos:
+      - bonsai/aw
+      - bonsai/aw.tui
+```
+
+### Clustering rules
+
+1. **Repo = responsibility** — one repo should have a clear reason to exist.
+2. **Domain = semantic cluster** — a domain groups related repos without absorbing them.
+3. **Capability = reusable connection** — OEM, workflow, sales, AI, data, etc. can cross domains.
+4. **Do not force a single tree** — a repo may belong to multiple clusters through explicit roles.
+5. **Evidence over intuition** — observed repository facts come from `bonsai/repos`; semantic classification lives here.
+6. **AI may propose clusters, but the registry declares them** — inference is not canonical meaning.
+
+This makes future domains cheap to add:
+
+```text
+fashion ─┐
+food ────┤
+home ────┤
+craft ───┼──→ domain cluster → capabilities → agents → workflows → real world
+education┤
+services ┘
+```
+
 ### ② Agent Ecosystem — 「知性」
 
 **Question: Who reasons, decides, plans, and coordinates?**
