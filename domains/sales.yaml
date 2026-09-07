@@ -1,0 +1,82 @@
+api_version: "v1"
+id: sales
+name: Sales Ecosystem
+version: "0.1"
+description: >
+  Product presentation, listing, commerce, customer interaction and
+  fulfillment interfaces.
+
+principles:
+  domain: semantic_cluster
+  repo: responsibility
+  product: business_output
+  evidence: observed_outcome
+
+repos:
+  bonsai/etsy:
+    role: commerce_interface
+    capabilities: [product_listing, ecommerce, fulfillment]
+  bonsai/socks:
+    role: product_surface
+    capabilities: [custom_product, small_lot]
+  bonsai/aloha:
+    role: product_surface
+    capabilities: [apparel_product, customization]
+
+capabilities:
+  catalog: [product_listing, metadata, imagery]
+  commerce: [ecommerce, ordering, fulfillment]
+  customer: [customer_request, customization, feedback]
+  measurement: [conversion, order_outcome, customer_feedback]
+
+entities:
+  - customer
+  - product
+  - listing
+  - order
+  - cart
+  - fulfillment
+  - feedback
+  - evidence
+
+relations:
+  lists: [listing, product]
+  requests: [customer, product]
+  orders: [customer, order]
+  contains: [order, product]
+  fulfills: [provider, order]
+  generates: [order, evidence]
+  informs: [feedback, product]
+
+workflows:
+  product_to_listing:
+    input: [product, imagery, description, price]
+    steps: [validate_product, generate_listing, publish, observe]
+    output: [listing, commerce_evidence]
+  request_to_order:
+    input: [customer_request]
+    steps: [semanticize_request, select_product, customize, estimate, order, fulfill]
+    output: [order, fulfillment, evidence]
+
+interfaces:
+  upstream: [fashion, manufacturing, intelligence]
+  downstream: [aw, bqml]
+
+boundaries:
+  sales: owns_commerce_interaction_and_outcomes
+  fashion: owns_product_semantics
+  manufacturing: owns_production_capability
+  bqml: owns_learned_predictions
+  aw: owns_execution
+
+governance:
+  observed: order_and_customer_fact
+  inferred: learned_conversion_or_demand_estimate
+  proposed: product_or_listing_candidate
+  validated: approved_listing_or_workflow
+  declared: sales_domain
+  source_of_truth: domain_yaml
+
+core_principle: >
+  Sales owns the interface between products and customers. It consumes
+  product and production capabilities without absorbing their ownership.
