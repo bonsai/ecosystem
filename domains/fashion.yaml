@@ -1,12 +1,13 @@
 # Fashion domain registry
 # Domain = semantic cluster / Repo = responsibility / Capability = reusable skill
 # Provider = production capability / Workflow = executable process
+# WorkType = object2object transformation type
 # Evidence = observed outcome / Graph = discovered relationship
 
 api_version: "v1"
 id: fashion
 name: Fashion Ecosystem
-version: "0.2"
+version: "0.3"
 description: >
   Apparel, textile, accessories, customization and fashion production.
   This file is a semantic registry, not an implementation repository.
@@ -18,6 +19,7 @@ principles:
   provider: production_capability
   product: business_output
   workflow: executable_process
+  worktype: object2object_transformation
   evidence: observed_outcome
   model: learned_estimate
 
@@ -77,6 +79,63 @@ workflows:
     steps: [semanticize_motif, convert_to_embroidery_ir, estimate_stitch_count, match_provider, produce, inspect]
     output: [embroidered_garment]
 
+# WorkType ontology: every executable workflow transformation is expressed as Object -> Object.
+# WorkType is the reusable type; a Task is an execution instance of a WorkType.
+worktype:
+  id: object2object
+  name: Object2Object WorkType
+  description: >
+    A reusable work type that transforms, generates, connects, updates,
+    aggregates, infers, or validates one object into another object.
+  input:
+    type: object
+  output:
+    type: object
+  operations:
+    - transform
+    - generate
+    - connect
+    - update
+    - aggregate
+    - infer
+    - validate
+  relations:
+    transforms: [object, object]
+    instantiated_as: [worktype, task]
+    executed_by: [task, agent]
+    orchestrated_by: [task, aw]
+    produces: [task, object]
+    evidenced_by: [task, evidence]
+  examples:
+    commit2journal:
+      from: commit
+      to: journal
+      operation: generate
+    journal2history:
+      from: journal
+      to: history
+      operation: aggregate
+    repo2cluster:
+      from: repository
+      to: cluster
+      operation: infer
+    cluster2domain:
+      from: cluster
+      to: domain
+      operation: generate
+    domain2repo:
+      from: domain
+      to: repository
+      operation: generate
+    domain2synapse:
+      from: domain
+      to: synapse
+      operation: generate
+    issue2task:
+      from: issue
+      to: task
+      operation: transform
+
 ontology:
   entities:
     - garment
@@ -94,6 +153,9 @@ ontology:
     - customer
     - order
     - workflow
+    - worktype
+    - task
+    - agent
     - evidence
   relations:
     made_from: [product, textile]
@@ -103,6 +165,9 @@ ontology:
     implements: [repo, capability]
     derived_from: [product, production_ir]
     executes: [agent, workflow]
+    has_worktype: [workflow, worktype]
+    instantiates: [task, worktype]
+    transforms: [worktype, object]
     validated_by: [relationship, evidence]
 
 graph:
@@ -217,6 +282,7 @@ architecture: |
 
 core_principle: >
   Fashion is a semantic ecosystem, not one repository. Domain YAML declares
-  stable meaning and validated relationships; repositories implement their
-  responsibilities; AW routes and generates executable work; BQML learns
-  from evidence but never replaces the domain source of truth.
+  stable meaning and validated relationships; WorkType defines reusable
+  object-to-object work; repositories implement responsibilities; AW routes
+  and executes tasks; BQML learns from evidence but never replaces the domain
+  source of truth.
