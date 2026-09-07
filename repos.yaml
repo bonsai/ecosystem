@@ -1,0 +1,118 @@
+api_version: "v1"
+kind: RepositoryRegistry
+name: Bonsai Repository Registry
+version: "0.1"
+description: >
+  Canonical registry of responsibility-bearing repositories and the
+  relationships between them. Repositories remain independently deployable.
+
+principles:
+  repo: responsibility
+  domain: semantic_cluster
+  capability: reusable_connection
+  evidence: observed_fact
+
+repos:
+  bonsai/ecosystem:
+    role: semantic_registry
+    layers: [semantic]
+  bonsai/repos:
+    role: repository_observatory
+    layers: [observation]
+  bonsai/ontology:
+    role: semantic_model
+    layers: [semantic]
+  bonsai/world-ontology:
+    role: world_vocabulary
+    layers: [semantic]
+  bonsai/intent:
+    role: semantic_ir
+    layers: [semantic]
+  bonsai/synapse:
+    role: relationship_model
+    layers: [semantic, graph]
+  bonsai/matrix:
+    role: computation_engine
+    language: go
+    layers: [computation]
+  bonsai/yaml-as-agent:
+    role: declarative_agent_and_learning_schema
+    layers: [agent, learning]
+  bonsai/agent:
+    role: agent_model
+    layers: [agent]
+  bonsai/soshiki:
+    role: agent_organization
+    layers: [agent]
+  bonsai/think:
+    role: reasoning_and_planning
+    layers: [agent]
+  bonsai/ds-agent:
+    role: data_science_agent
+    layers: [agent, learning]
+  bonsai/aw:
+    role: workflow_router_generator_executor
+    layers: [execution]
+  bonsai/aw.tui:
+    role: execution_interface
+    layers: [execution]
+  bonsai/fashion:
+    role: domain_candidate
+    layers: [domain]
+  bonsai/socks:
+    role: fashion_product
+    layers: [real_world]
+  bonsai/aloha:
+    role: apparel_product
+    layers: [real_world]
+  bonsai/textile:
+    role: production_representation
+    layers: [real_world]
+  bonsai/costume-generation:
+    role: design_composition
+    layers: [real_world]
+  bonsai/shishu:
+    role: embroidery_specialization
+    layers: [real_world]
+  bonsai/amimono:
+    role: knitting_specialization
+    layers: [real_world]
+  bonsai/oem:
+    role: manufacturing_provider_registry
+    layers: [real_world]
+  bonsai/etsy:
+    role: commerce_interface
+    layers: [real_world]
+
+services:
+  bigquery:
+    role: analytical_history
+  bqml:
+    role: statistical_learning
+    domain: bqml
+
+domains:
+  - fashion
+  - manufacturing
+  - sales
+  - intelligence
+  - bqml
+
+relations:
+  - [repos, ontology, observes]
+  - [ontology, synapse, semantic_relationships]
+  - [synapse, matrix, graph_features]
+  - [matrix, bigquery, analytical_projection]
+  - [bigquery, bqml, training_data]
+  - [bqml, matrix, learned_weights]
+  - [bqml, aw, prediction_input]
+  - [aw, agents, workflow_execution]
+  - [agents, aw, execution_request]
+  - [aw, real_world, operational_action]
+  - [real_world, repos, evidence]
+
+source_of_truth:
+  observed: bonsai/repos
+  declared: domains/*.yaml
+  learned: bqml
+  executed: aw
