@@ -1,0 +1,146 @@
+api_version: "v1"
+id: agents
+name: Agent Ecosystem
+version: "0.1"
+description: >
+  Canonical domain for defining agents by the work they are responsible for,
+  their boundaries, capabilities, authority, services and execution roles.
+
+principles:
+  agent: work_server
+  work: intentional_state_transition
+  service: contracted_capability
+  intelligence: decision_capability
+  archetype: work_boundary
+  role: domain_specialization
+  authority: permitted_change
+
+core_model:
+  intent: why the work exists
+  work: what state should change
+  service: what contracted capability is offered
+  intelligence: what can be known, reasoned about and decided
+  think: how intelligence is applied
+  agent: who accepts and executes the work
+  task: concrete unit of work
+  action: actual operation
+  result: observed outcome
+
+agent_definition:
+  required:
+    - identity
+    - purpose
+    - archetype
+    - does
+    - does_not
+    - accepts
+    - produces
+    - capabilities
+    - authority
+  boundary_rule: >
+    An agent is defined by the work boundary it accepts, not by the model
+    or intelligence provider behind it.
+
+archetypes:
+  observer:
+    purpose: perceive and establish state
+    does: [observe, collect, detect, classify, summarize]
+    does_not: [modify_state, execute_authorized_changes]
+  analyst:
+    purpose: transform evidence into understanding
+    does: [analyze, compare, measure, diagnose, hypothesize, evaluate]
+    does_not: [fabricate_evidence, execute_without_authority]
+  executor:
+    purpose: perform authorized work and change state
+    does: [execute, transform, update, deploy, operate, verify]
+    does_not: [change_intent, exceed_authority, redefine_success]
+  orchestrator:
+    purpose: coordinate work across agents and services
+    does: [decompose, delegate, sequence, route, integrate, verify]
+    does_not: [absorb_all_subtasks, bypass_boundaries, invent_authority]
+
+roles:
+  principle: >
+    Roles specialize an archetype for a domain or organization. FDE-Agent is
+    a role/application pattern, not a universal fifth archetype.
+  examples:
+    - fde-agent
+    - data-analyst
+    - researcher
+    - reviewer
+    - operator
+    - planner
+
+entities:
+  - agent
+  - archetype
+  - role
+  - work
+  - service
+  - task
+  - action
+  - capability
+  - authority
+  - state
+  - result
+  - contract
+
+relations:
+  has_archetype: [agent, archetype]
+  has_role: [agent, role]
+  accepts: [agent, work]
+  offers: [agent, service]
+  has_capability: [agent, capability]
+  authorized_by: [agent, authority]
+  decomposes: [agent, work]
+  delegates: [agent, task]
+  executes: [agent, action]
+  changes: [action, state]
+  produces: [action, result]
+  satisfies: [result, contract]
+
+lifecycle:
+  - intent
+  - work_definition
+  - intelligence_selection
+  - agent_selection
+  - task_decomposition
+  - action
+  - state_change
+  - result
+  - evaluation
+  - feedback
+
+interfaces:
+  upstream: [intent, think, intelligence, ecosystem]
+  downstream: [aw, services, domain_workflows, real_world]
+
+boundaries:
+  intent: owns purpose
+  work: owns desired state transition
+  think: owns reusable methods
+  intelligence: owns decision capability
+  agents: owns actor and work boundary
+  aw: owns execution orchestration
+  real_world: owns observed outcomes
+
+validation:
+  required:
+    - purpose
+    - explicit_does
+    - explicit_does_not
+    - authority_boundary
+    - input_contract
+    - output_contract
+    - success_condition
+    - failure_condition
+
+canonical_rule: >
+  Do not define an agent only by its model, prompt or tool access. Define the
+  work it accepts, the service it provides, what it does, what it does not do,
+  and the authority under which it may change state.
+
+core_principle: >
+  Agent is a work server: it accepts a bounded work request, applies the
+  required intelligence and methods, performs authorized actions, and returns
+  an observable result.
