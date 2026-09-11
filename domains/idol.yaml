@@ -1,14 +1,14 @@
 # Idol domain registry
 # Domain = semantic cluster / Repo = responsibility / Capability = reusable function
-# This registry connects idol research, discovery, live information, fan sites,
-# production, and cultural analysis without turning them into one repository.
+# The registry connects independent repositories through explicit responsibilities.
 
 api_version: "v1"
 id: idol
 name: Idol Ecosystem
-version: "0.1"
+version: "0.2"
 description: >
-  Idol discovery, research, live information, fan sites, quizzes, production,
+  An ecosystem for idol theory, empirical research and marketing, canonical
+  data/API, music research, live information, fan sites, production,
   ranking, mapping, and cultural analysis.
 
 principles:
@@ -17,11 +17,12 @@ principles:
   capability: reusable_function
   evidence: observed_source
   source_of_truth: validated_registry
+  canonical_data: idol-db
 
 repos:
   bonsai/idol-portal:
-    role: portal
-    capabilities: [idol_discovery, navigation, aggregation]
+    role: portal_and_orchestration
+    capabilities: [idol_discovery, navigation, aggregation, ecosystem_coordination]
   bonsai/idol-fansite:
     role: fan_site_platform
     capabilities: [fan_site, idol_archive, profile, timeline, live_archive, essays]
@@ -29,8 +30,20 @@ repos:
     role: live_information
     capabilities: [live_search, event_data, schedule, venue_data]
   bonsai/idol-lab:
-    role: research
-    capabilities: [idol_research, ontology, cultural_analysis, data_collection]
+    role: theory_and_cultural_research
+    capabilities: [idol_theory, idol_folklore, ontology, cultural_analysis, conceptual_research]
+  bonsai/idol-research:
+    role: empirical_research_and_marketing
+    capabilities: [research_design, hypothesis_testing, marketing, analysis, data_collection, research_code]
+    data_policy: consume_canonical_data_from_idol-db
+  bonsai/idol-db:
+    role: canonical_data_and_api
+    capabilities: [database, data_registry, schemas, provenance, api]
+    data_policy: source_of_truth_for_structured_idol_data
+  bonsai/idol-playlist:
+    role: music_research_and_playlists
+    capabilities: [music_research, playlist, song_data, music_crossover, spotify_research]
+    data_policy: music_domain_data_may_be_referenced_by_idol-db
   bonsai/idol-quiz:
     role: interaction
     capabilities: [quiz, knowledge_testing, fan_engagement]
@@ -46,6 +59,14 @@ repos:
   bonsai/idol-oshare:
     role: fashion_and_style
     capabilities: [idol_fashion, styling, appearance_data]
+
+architecture:
+  theory_to_research: bonsai/idol-lab -> bonsai/idol-research
+  research_to_data: bonsai/idol-research -> bonsai/idol-db
+  data_to_research: bonsai/idol-db -> bonsai/idol-research
+  music_to_data: bonsai/idol-playlist -> bonsai/idol-db
+  data_to_apps: bonsai/idol-db -> [bonsai/idol-live, bonsai/idol-fansite, bonsai/idol-map, bonsai/idol-banduke]
+  orchestration: bonsai/aw -> ecosystem workflows
 
 entities:
   idol:
@@ -66,19 +87,25 @@ entities:
 capabilities:
   discovery: [idol_discovery, group_discovery, live_search, local_idol_discovery]
   archive: [profile, timeline, live_archive, song_archive, photo_archive, essay_archive]
-  research: [idol_research, ontology, cultural_analysis, data_collection]
+  research: [idol_theory, idol_research, research_design, hypothesis_testing, marketing]
+  data: [database, schemas, provenance, api, canonical_registry]
   interaction: [quiz, fan_engagement, decision_simulation]
-  analysis: [ranking, comparison, mapping, clustering]
+  analysis: [ranking, comparison, mapping, clustering, marketing_analysis]
   production: [idol_produce, event_planning, fan_site_generation]
+  music: [music_research, playlist, song_data, music_crossover]
 
 workflows:
   idol_registry:
     input: [repository, source, idol_candidate]
-    steps: [observe, normalize, validate, register, connect]
+    steps: [observe, normalize, validate, register_in_idol_db, connect]
     output: [idol_record, relationship_evidence]
+  research_cycle:
+    input: [research_question, hypothesis]
+    steps: [design, request_data_from_idol_db, analyze, evaluate, record_insight]
+    output: [evidence, evaluation, next_hypothesis]
   live_to_fan_site:
     input: [live_event, idol]
-    steps: [collect, normalize, validate_source, attach_to_idol, publish]
+    steps: [collect, normalize, validate_source, register_in_idol_db, attach_to_idol, publish]
     output: [live_record, fan_site_update]
   idol_to_fan_site:
     input: [idol]
@@ -101,6 +128,10 @@ ontology:
     - fan_site
     - repository
     - research
+    - marketing
+    - database
+    - api
+    - playlist
     - ranking
     - map
   relations:
@@ -112,6 +143,10 @@ ontology:
     documented_by: [entity, source]
     archived_by: [idol, fan_site]
     researched_by: [idol, research]
+    stored_in: [entity, database]
+    served_by: [entity, api]
+    informed_by: [research, database]
+    supplied_by: [database, playlist]
     ranked_by: [idol, ranking]
     mapped_by: [idol, map]
     implemented_by: [capability, repository]
@@ -129,6 +164,8 @@ idol_ids:
 sources:
   policy:
     - Keep source URLs with factual records.
+    - Canonical structured records belong in idol-db.
+    - Research repositories must preserve provenance when deriving data.
     - Do not promote unverified claims to canonical facts.
     - Distinguish observed, inferred, proposed, validated, and declared data.
 
@@ -155,6 +192,6 @@ governance:
   source_of_truth: domains/idol.yaml
 
 core_principle: >
-  Idol is a semantic ecosystem, not one application. Repositories remain
-  independently useful while the domain registry connects discovery, research,
-  live information, fan archives, interaction, production, mapping and analysis.
+  Idol is a semantic ecosystem, not one application. Theory, research,
+  canonical data/API, music research, and applications remain independently
+  useful while the domain registry defines how they connect.
