@@ -5,11 +5,11 @@
 api_version: "v1"
 id: idol
 name: Idol Ecosystem
-version: "0.2"
+version: "0.3"
 description: >
   An ecosystem for idol theory, empirical research and marketing, canonical
-  data/API, music research, live information, fan sites, production,
-  ranking, mapping, and cultural analysis.
+  data collection/API, music research, live information, fan sites,
+  production, ranking, mapping, and cultural analysis.
 
 principles:
   repo: responsibility
@@ -34,11 +34,11 @@ repos:
     capabilities: [idol_theory, idol_folklore, ontology, cultural_analysis, conceptual_research]
   bonsai/idol-research:
     role: empirical_research_and_marketing
-    capabilities: [research_design, hypothesis_testing, marketing, analysis, data_collection, research_code]
+    capabilities: [research_design, hypothesis_testing, marketing, analysis, research_code]
     data_policy: consume_canonical_data_from_idol-db
   bonsai/idol-db:
-    role: canonical_data_and_api
-    capabilities: [database, data_registry, schemas, provenance, api]
+    role: canonical_data_collection_and_api
+    capabilities: [database, data_registry, schemas, provenance, crawler, normalization, validation, api]
     data_policy: source_of_truth_for_structured_idol_data
   bonsai/idol-playlist:
     role: music_research_and_playlists
@@ -65,6 +65,7 @@ architecture:
   research_to_data: bonsai/idol-research -> bonsai/idol-db
   data_to_research: bonsai/idol-db -> bonsai/idol-research
   music_to_data: bonsai/idol-playlist -> bonsai/idol-db
+  crawler_to_data: bonsai/idol-db -> bonsai/idol-db
   data_to_apps: bonsai/idol-db -> [bonsai/idol-live, bonsai/idol-fansite, bonsai/idol-map, bonsai/idol-banduke]
   orchestration: bonsai/aw -> ecosystem workflows
 
@@ -88,7 +89,7 @@ capabilities:
   discovery: [idol_discovery, group_discovery, live_search, local_idol_discovery]
   archive: [profile, timeline, live_archive, song_archive, photo_archive, essay_archive]
   research: [idol_theory, idol_research, research_design, hypothesis_testing, marketing]
-  data: [database, schemas, provenance, api, canonical_registry]
+  data: [database, schemas, provenance, crawler, normalization, validation, api, canonical_registry]
   interaction: [quiz, fan_engagement, decision_simulation]
   analysis: [ranking, comparison, mapping, clustering, marketing_analysis]
   production: [idol_produce, event_planning, fan_site_generation]
@@ -97,7 +98,7 @@ capabilities:
 workflows:
   idol_registry:
     input: [repository, source, idol_candidate]
-    steps: [observe, normalize, validate, register_in_idol_db, connect]
+    steps: [observe, crawl, normalize, validate, register_in_idol_db, connect]
     output: [idol_record, relationship_evidence]
   research_cycle:
     input: [research_question, hypothesis]
@@ -105,7 +106,7 @@ workflows:
     output: [evidence, evaluation, next_hypothesis]
   live_to_fan_site:
     input: [live_event, idol]
-    steps: [collect, normalize, validate_source, register_in_idol_db, attach_to_idol, publish]
+    steps: [crawl, normalize, validate_source, register_in_idol_db, attach_to_idol, publish]
     output: [live_record, fan_site_update]
   idol_to_fan_site:
     input: [idol]
@@ -131,6 +132,7 @@ ontology:
     - marketing
     - database
     - api
+    - crawler
     - playlist
     - ranking
     - map
@@ -149,6 +151,7 @@ ontology:
     supplied_by: [database, playlist]
     ranked_by: [idol, ranking]
     mapped_by: [idol, map]
+    collected_by: [entity, crawler]
     implemented_by: [capability, repository]
 
 idol_ids:
@@ -165,7 +168,8 @@ sources:
   policy:
     - Keep source URLs with factual records.
     - Canonical structured records belong in idol-db.
-    - Research repositories must preserve provenance when deriving data.
+    - Crawlers that create canonical records belong in idol-db.
+    - Research repositories consume canonical data and preserve provenance.
     - Do not promote unverified claims to canonical facts.
     - Distinguish observed, inferred, proposed, validated, and declared data.
 
@@ -193,5 +197,5 @@ governance:
 
 core_principle: >
   Idol is a semantic ecosystem, not one application. Theory, research,
-  canonical data/API, music research, and applications remain independently
-  useful while the domain registry defines how they connect.
+  canonical data collection/API, music research, and applications remain
+  independently useful while the domain registry defines how they connect.
