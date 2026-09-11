@@ -1,37 +1,64 @@
 # Idol domain registry
-# Domain = semantic cluster / Repo = responsibility / Capability = reusable function
-# The registry connects independent repositories through explicit responsibilities.
+# Issue = action / Code = implementation / DB = canonical data / Research = empirical study
 
 api_version: "v1"
 id: idol
 name: Idol Ecosystem
-version: "0.3"
+version: "0.4"
 description: >
-  An ecosystem for idol theory, empirical research and marketing, canonical
-  data collection/API, music research, live information, fan sites,
-  production, ranking, mapping, and cultural analysis.
+  Evidence-based theory stays in idol-lab; executable work is routed to the
+  responsible repository, with canonical structured data in idol-db and
+  empirical/marketing research in idol-research.
 
 principles:
   repo: responsibility
   domain: semantic_cluster
   capability: reusable_function
+  issue: next_action
+  code: implementation
   evidence: observed_source
-  source_of_truth: validated_registry
   canonical_data: idol-db
 
+routing:
+  theory:
+    repo: bonsai/idol-lab
+    rule: evidence_based_theorization_only
+  data:
+    repo: bonsai/idol-db
+    rule: canonical_data_crawler_schema_provenance_api
+  research:
+    repo: bonsai/idol-research
+    rule: empirical_research_marketing_analysis_research_code
+  music:
+    repo: bonsai/idol-playlist
+    rule: music_research_playlists
+  quiz:
+    repo: bonsai/idol-quiz
+    rule: quiz_interaction_question_generation
+  map:
+    repo: bonsai/idol-map
+    rule: geographic_graph_visualization
+  portal:
+    repo: bonsai/idol-portal
+    rule: public_pages_navigation_orchestration
+
+issue_policy:
+  source_repo: bonsai/idol-lab
+  rule: >
+    Organize idol-lab Issues, execute the actionable Issue, and route
+    implementation/data/research work to the responsible repository. Close
+    the source Issue after the handoff is recorded.
+  lab_exception: evidence_based_theory_cultural_interpretation_ontology_conceptual_research
+  code_policy: skip_in_lab
+  data_policy: route_to_idol-db
+  research_policy: route_to_idol-research
+
 repos:
-  bonsai/idol-portal:
-    role: portal_and_orchestration
-    capabilities: [idol_discovery, navigation, aggregation, ecosystem_coordination]
-  bonsai/idol-fansite:
-    role: fan_site_platform
-    capabilities: [fan_site, idol_archive, profile, timeline, live_archive, essays]
-  bonsai/idol-live:
-    role: live_information
-    capabilities: [live_search, event_data, schedule, venue_data]
   bonsai/idol-lab:
     role: theory_and_cultural_research
     capabilities: [idol_theory, idol_folklore, ontology, cultural_analysis, conceptual_research]
+    data_policy: no_canonical_data
+    code_policy: no_implementation
   bonsai/idol-research:
     role: empirical_research_and_marketing
     capabilities: [research_design, hypothesis_testing, marketing, analysis, research_code]
@@ -43,16 +70,24 @@ repos:
   bonsai/idol-playlist:
     role: music_research_and_playlists
     capabilities: [music_research, playlist, song_data, music_crossover, spotify_research]
-    data_policy: music_domain_data_may_be_referenced_by_idol-db
   bonsai/idol-quiz:
     role: interaction
     capabilities: [quiz, knowledge_testing, fan_engagement]
-  bonsai/idol-produce:
-    role: production_simulation
-    capabilities: [idol_produce, decision_simulation, management_game]
   bonsai/idol-map:
     role: geographic_information
     capabilities: [idol_mapping, location_data, local_idol_discovery]
+  bonsai/idol-portal:
+    role: portal_and_orchestration
+    capabilities: [idol_discovery, navigation, aggregation, ecosystem_coordination]
+  bonsai/idol-fansite:
+    role: fan_site_platform
+    capabilities: [fan_site, idol_archive, profile, timeline, live_archive, essays]
+  bonsai/idol-live:
+    role: live_information
+    capabilities: [live_search, event_data, schedule, venue_data]
+  bonsai/idol-produce:
+    role: production_simulation
+    capabilities: [idol_produce, decision_simulation, management_game]
   bonsai/idol-banduke:
     role: ranking
     capabilities: [ranking, comparison, banduke_data]
@@ -69,100 +104,19 @@ architecture:
   data_to_apps: bonsai/idol-db -> [bonsai/idol-live, bonsai/idol-fansite, bonsai/idol-map, bonsai/idol-banduke]
   orchestration: bonsai/aw -> ecosystem workflows
 
-entities:
-  idol:
-    attributes: [id, name, slug, group, member_color, status]
-  group:
-    attributes: [id, name, members, genre]
-  live:
-    attributes: [id, date, venue, title, performers, source]
-  song:
-    attributes: [id, title, artist, release, source]
-  appearance:
-    attributes: [id, date, medium, program, source]
-  source:
-    attributes: [url, publisher, observed_at, reliability]
-  fan_site:
-    attributes: [idol_id, path, sections]
-
-capabilities:
-  discovery: [idol_discovery, group_discovery, live_search, local_idol_discovery]
-  archive: [profile, timeline, live_archive, song_archive, photo_archive, essay_archive]
-  research: [idol_theory, idol_research, research_design, hypothesis_testing, marketing]
-  data: [database, schemas, provenance, crawler, normalization, validation, api, canonical_registry]
-  interaction: [quiz, fan_engagement, decision_simulation]
-  analysis: [ranking, comparison, mapping, clustering, marketing_analysis]
-  production: [idol_produce, event_planning, fan_site_generation]
-  music: [music_research, playlist, song_data, music_crossover]
-
 workflows:
-  idol_registry:
-    input: [repository, source, idol_candidate]
-    steps: [observe, crawl, normalize, validate, register_in_idol_db, connect]
-    output: [idol_record, relationship_evidence]
+  issue_handoff:
+    input: [idol_lab_issue]
+    steps: [classify, route, create_target_issue, execute_target_issue, close_source_issue]
+    rule: do_not_implement_out_of_scope_code_in_idol_lab
   research_cycle:
     input: [research_question, hypothesis]
     steps: [design, request_data_from_idol_db, analyze, evaluate, record_insight]
     output: [evidence, evaluation, next_hypothesis]
-  live_to_fan_site:
-    input: [live_event, idol]
-    steps: [crawl, normalize, validate_source, register_in_idol_db, attach_to_idol, publish]
-    output: [live_record, fan_site_update]
-  idol_to_fan_site:
-    input: [idol]
-    steps: [identify, create_slug, create_profile, attach_timeline, attach_live, publish]
-    output: [fan_site]
-  repo_to_domain:
-    input: [repository]
-    steps: [observe_metadata, infer_capabilities, validate, declare]
-    output: [domain_relationship]
-
-ontology:
-  entities:
-    - idol
-    - group
-    - live
-    - song
-    - appearance
-    - venue
-    - source
-    - fan_site
-    - repository
-    - research
-    - marketing
-    - database
-    - api
-    - crawler
-    - playlist
-    - ranking
-    - map
-  relations:
-    member_of: [idol, group]
-    performs_at: [idol, live]
-    held_at: [live, venue]
-    appears_in: [idol, appearance]
-    performs: [idol, song]
-    documented_by: [entity, source]
-    archived_by: [idol, fan_site]
-    researched_by: [idol, research]
-    stored_in: [entity, database]
-    served_by: [entity, api]
-    informed_by: [research, database]
-    supplied_by: [database, playlist]
-    ranked_by: [idol, ranking]
-    mapped_by: [idol, map]
-    collected_by: [entity, crawler]
-    implemented_by: [capability, repository]
-
-idol_ids:
-  scheme: stable_numeric
-  example:
-    i100:
-      name: 早河もも
-      slug: hayakawa-momo
-      fan_site: bonsai/idol-fansite/i100/hayakawa-momo
-      status: active_record
-      source_required: true
+  idol_registry:
+    input: [repository, source, idol_candidate]
+    steps: [observe, crawl, normalize, validate, register_in_idol_db, connect]
+    output: [idol_record, relationship_evidence]
 
 sources:
   policy:
@@ -173,20 +127,6 @@ sources:
     - Do not promote unverified claims to canonical facts.
     - Distinguish observed, inferred, proposed, validated, and declared data.
 
-execution:
-  orchestrator: bonsai/aw
-  interfaces: [mcp, cli, workflow]
-  responsibilities:
-    router: select_idol_workflow
-    generator: generate_repo_or_site_candidates
-    executor: run_validated_workflows
-
-learning:
-  engine: bqml
-  candidate_features: [live_frequency, activity, engagement, geography, content]
-  outputs: [clusters, predictions, anomalies, recommendations]
-  rule: learned_output_is_evidence_until_validated
-
 governance:
   observed: source_or_repository_fact
   inferred: analytical_result
@@ -196,6 +136,6 @@ governance:
   source_of_truth: domains/idol.yaml
 
 core_principle: >
-  Idol is a semantic ecosystem, not one application. Theory, research,
-  canonical data collection/API, music research, and applications remain
-  independently useful while the domain registry defines how they connect.
+  Idol is a semantic ecosystem, not one application. Idol-lab is the theory
+  layer; actionable implementation and structured data are routed to the
+  responsible repositories, especially idol-db and idol-research.
