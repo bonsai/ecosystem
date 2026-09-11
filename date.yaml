@@ -1,0 +1,157 @@
+version: 1
+name: date-ecosystem
+purpose: "人とAgentが一緒に体験をつくり、自分自身のコミュニケーションと行動を改良していくためのAgent ecosystem"
+frame: AX
+
+principles:
+  - "各レポはデータ置き場ではなく、専門領域を観測するAgent"
+  - "相手を操作するのではなく、自分を改良する"
+  - "温度そのものではなく、温度の変化を見る"
+  - "ゴールから逆算するが、最短経路だけを選ばない"
+  - "必要な葛藤と余白を残す"
+  - "逆手を一度見る"
+  - "体験の結果を次の行動へフィードバックする"
+
+ax_loop:
+  - observe
+  - interpret
+  - reverse_view
+  - next_action
+  - experience
+  - feedback
+  - learn
+
+agents:
+  dates:
+    role: theory
+    layer: ontology
+    focus:
+      - relationship
+      - experience
+      - psychological_change
+      - conflict
+      - excitement
+      - friction
+    principle: "コンバージョンではなく、そこへ向かう途中の変化を見る"
+
+  backcast-agent:
+    role: controller
+    layer: reasoning
+    focus:
+      - goal
+      - backcasting
+      - reverse_view
+      - next_action
+    principle: "答えを出す前に、一度だけ視点をひっくり返す"
+
+  chat-analyze:
+    role: conversation-agent
+    layer: communication
+    focus:
+      - conversation_flow
+      - topic_change
+      - response_pattern
+      - conversation_temperature
+      - temperature_change
+      - unresolved_questions
+      - self_improvement
+    principle: "相手の心理を断定せず、自分のコミュニケーションを学習する"
+    loop:
+      - chat
+      - observe_response
+      - measure_change
+      - reverse_view
+      - improve_self
+      - chat_again
+
+  odekake-mcp:
+    role: world-agent
+    layer: model
+    focus:
+      - places
+      - events
+      - restaurants
+      - routes
+      - time
+      - transport
+    principle: "Search returns points. date-workflow creates the line."
+
+  date-mcp:
+    role: domain-agent
+    layer: experience
+    focus:
+      - two_person_time
+      - mood
+      - intimacy
+      - sequence
+      - private_stay
+    principle: "デートを最初から前提にせず、会話と体験の変化から次の可能性をつくる"
+
+  domain-reports:
+    role: specialist-agents
+    layer: research
+    principle: "各ドメインレポは、その領域を見る知覚器官でありAgent"
+    examples:
+      - owarai-live
+      - art-event
+      - idol-live
+      - dj-event
+      - tokyo-parks
+
+relationships:
+  - from: chat-analyze
+    to: backcast-agent
+    purpose: "会話の現在地と逆手を渡す"
+  - from: backcast-agent
+    to: odekake-mcp
+    purpose: "ゴールから必要な現実世界の素材を探索する"
+  - from: odekake-mcp
+    to: date-mcp
+    purpose: "点の素材を二人の時間の流れへ組み立てる"
+  - from: date-mcp
+    to: chat-analyze
+    purpose: "体験後の会話と温度変化を次の学習へ戻す"
+  - from: domain-reports
+    to: backcast-agent
+    purpose: "各ドメインの観測結果を次の一手に利用する"
+
+conversation_temperature:
+  definition: "会話の状態そのものではなく、会話がどう変化しているかを表す観測値"
+  signals:
+    - response_length
+    - response_interval
+    - question_return
+    - topic_expansion
+    - empathy
+    - humor
+    - continuation
+    - pause
+    - topic_recovery
+  interpretation:
+    - rising
+    - falling
+    - stable
+    - oscillating
+  warning: "温度から好意・同意・心理状態を断定しない"
+
+self_improvement:
+  goal: "相手を動かすことではなく、自分の会話能力と判断を改良する"
+  questions:
+    - "自分の何が会話を広げたか？"
+    - "自分の何が会話を止めたか？"
+    - "別の解釈はないか？"
+    - "相手側から見たらどう見えるか？"
+    - "次は何を一つ変えて試すか？"
+
+journey:
+  - chat
+  - interest
+  - shared_topic
+  - continued_conversation
+  - shared_possibility
+  - optional_date
+  - experience
+  - feedback
+  - improved_self
+
+key_idea: "デートありきではない。会話し、わくわくを共有し、自分を改良しながら、自然に次の体験が生まれる。"
