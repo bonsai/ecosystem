@@ -47,6 +47,7 @@ domains/
 ├── bqml.yaml
 ├── fashion.yaml
 ├── game.yaml
+├── idol.yaml
 ├── intelligence.yaml
 ├── manufacturing.yaml
 ├── sales.yaml
@@ -54,6 +55,31 @@ domains/
 ```
 
 A **domain is a semantic cluster, not a repository container**. A repository can participate in multiple domains through explicit roles.
+
+## Idol
+
+[`domains/idol.yaml`](./domains/idol.yaml) defines the idol ecosystem:
+
+```text
+idol
+├── discovery / portal
+├── research / ontology
+├── live / events
+├── fan sites / archives
+├── interaction / quiz
+├── production / simulation
+├── map / geography
+├── ranking / comparison
+└── fashion / styling
+```
+
+The current registry includes `bonsai/idol-fansite` with the stable idol path pattern:
+
+```text
+i100/hayakawa-momo
+```
+
+`i100` is the stable idol identifier and `hayakawa-momo` is the human-readable slug. New idols can descend as `i101`, `i102`, etc.
 
 ## Solve: the cross-domain protocol
 
@@ -201,6 +227,7 @@ bonsai/ecosystem
 │   ├── bqml.yaml
 │   ├── fashion.yaml
 │   ├── game.yaml
+│   ├── idol.yaml
 │   ├── intelligence.yaml
 │   ├── manufacturing.yaml
 │   ├── sales.yaml
