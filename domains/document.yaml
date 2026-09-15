@@ -1,0 +1,146 @@
+api_version: "v1"
+id: document
+name: Document Ecosystem
+version: "0.1"
+description: >
+  Semantic domain for documents as symbolic interfaces, including repository
+  metadata, declarations, contracts, knowledge, decisions, and evidence.
+
+principles:
+  document: symbolic_interface
+  repository: metadata_subject
+  metadata: observed_or_declared_repository_fact
+  ontology: model_of_concept_interfaces
+  evidence: support_for_claims
+  declaration: validated_semantic_meaning
+
+repos:
+  bonsai/repos:
+    role: repository_metadata_source
+    capabilities: [repository_registry, metadata, repo_yaml]
+  bonsai/github-observatory:
+    role: repository_observatory
+    capabilities: [github_metadata, dwh, bqml, repository_relations, visualization]
+  bonsai/interface:
+    role: document_interface_model
+    capabilities: [ontology, taxonomy, semantic_interfaces, document_domain]
+  bonsai/DDD:
+    role: document_driven_development
+    capabilities: [issue_document_traceability, knowledge_flow, work_artifacts]
+  bonsai/ecosystem:
+    role: semantic_registry
+    capabilities: [domain_registry, contracts, repository_bindings]
+
+metadata:
+  repository:
+    identity: [id, full_name, name, owner, url]
+    description: [description]
+    lifecycle: [created_at, updated_at, pushed_at, archived]
+    visibility: [visibility]
+    source_control: [default_branch]
+    activity: [stars, forks, watchers, open_issues]
+    technology: [language, languages, topics]
+    structure: [repo_yaml, readme, docs, source_files]
+    ecosystem: [domains, roles, capabilities, relations]
+
+  repo_yaml:
+    role: canonical_repository_declaration
+    contains: [identity, purpose, domain, capabilities, relations, governance]
+
+  observation:
+    role: external_repository_fact
+    source: [github_api, repository_files, commits, workflows]
+
+  inference:
+    role: provisional_analytical_result
+    examples: [cluster, topic, capability, relation, role]
+
+  declaration:
+    role: validated_semantic_statement
+    source_of_truth: repository_or_domain_yaml
+
+entities:
+  - document
+  - repository
+  - repository_metadata
+  - repository_relation
+  - concept
+  - domain
+  - claim
+  - evidence
+  - decision
+  - artifact
+  - capability
+
+relations:
+  describes: [document, repository]
+  contains: [document, repository_metadata]
+  declares: [repository, concept]
+  belongs_to: [repository, domain]
+  has_capability: [repository, capability]
+  relates_to: [repository, repository]
+  depends_on: [repository, repository]
+  implements: [repository, repository]
+  researches: [repository, repository]
+  uses: [repository, repository]
+  supports: [evidence, claim]
+  observes: [evidence, repository]
+  infers: [evidence, concept]
+  validates: [decision, inference]
+  produces: [repository, artifact]
+  refines: [document, document]
+  transforms: [document, document]
+
+workflows:
+  repository_to_document:
+    input: [github_metadata, repository_files, repo_yaml]
+    steps: [observe, normalize, classify, infer, validate, declare]
+    output: [repository_metadata, repository_document]
+
+  repository_relation_graph:
+    input: [repository_metadata, repo_yaml]
+    steps: [extract_relations, normalize_relations, build_graph, visualize]
+    output: [repository_relation_graph]
+
+  document_to_ecosystem:
+    input: [repository_document, domain_document]
+    steps: [match_domain, validate_capabilities, register_repository, publish_contract]
+    output: [ecosystem_registry]
+
+interfaces:
+  upstream:
+    - world
+    - github
+    - repository_files
+    - observation
+  downstream:
+    - interface
+    - ecosystem
+    - intelligence
+    - bqml
+    - execution
+
+boundaries:
+  world: owns observable reality
+  github: owns platform metadata
+  document: owns symbolic representation and repository metadata model
+  interface: owns concept-to-concept semantic interfaces
+  ecosystem: owns cross-repository domain registry and contracts
+  intelligence: owns reasoning and decisions
+  bqml: owns statistical learning
+  execution: owns operational behavior
+
+governance:
+  observed: github_or_repository_fact
+  inferred: analytical_classification
+  proposed: semantic_change
+  validated: reviewed_metadata_or_relation
+  declared: repository_or_domain_document
+  source_of_truth: repo_yaml_and_domain_yaml
+
+core_principle: >
+  A repository is not only executable code. It is a document-bearing semantic
+  object with identity, metadata, capabilities, relations, evidence, and
+  declarations. Repository metadata can be observed, analyzed, validated,
+  documented, and registered in the ecosystem without coupling repositories
+  at runtime.
