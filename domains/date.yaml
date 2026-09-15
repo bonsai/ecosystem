@@ -1,0 +1,119 @@
+# Date domain registry
+# dates = theory / date-mcp = orchestration / providers = capabilities and data
+
+api_version: "v1"
+id: date
+name: Date Ecosystem
+version: "0.1"
+description: >
+  A semantic domain for understanding, discovering, and composing shared time
+  between two or more people. dates defines the theory; date-mcp turns intent
+  into plans; provider repositories supply events, food, and places.
+
+principles:
+  repo: responsibility
+  domain: semantic_cluster
+  capability: reusable_function
+  theory: conceptual_model
+  orchestration: decision_and_plan
+  provider: external_capability_or_data
+
+routing:
+  theory:
+    repo: bonsai/dates
+    rule: date_theory_ontology_semantics_and_evaluation
+  orchestration:
+    repo: bonsai/date-mcp
+    rule: natural_language_intent_provider_orchestration_and_plan_generation
+  event:
+    repo: bonsai/stage-search
+    rule: event_discovery_and_event_data
+  food:
+    repo: bonsai/tokyo-sushi
+    rule: sushi_restaurant_data_and_discovery
+  place:
+    repo: bonsai/odekake-mcp
+    rule: outing_place_discovery_and_location_context
+
+repos:
+  bonsai/dates:
+    role: theory_and_semantics
+    capabilities: [date_theory, ontology, relationship, experience_model, date_quality, conceptual_research]
+    data_policy: no_runtime_source_of_truth
+    code_policy: theory_only
+  bonsai/date-mcp:
+    role: orchestration_and_agent
+    capabilities: [natural_language_intent, provider_orchestration, date_planning, plan_composition, constraint_matching]
+    data_policy: consume_provider_data
+  bonsai/stage-search:
+    role: event_provider
+    capabilities: [event_search, live_search, theater, festival, lecture, traditional_arts, event_data]
+    data_policy: canonical_event_source_for_stage_domain
+  bonsai/tokyo-sushi:
+    role: food_provider
+    capabilities: [sushi_search, restaurant_data, restaurant_discovery, food_context]
+    data_policy: canonical_sushi_source
+  bonsai/odekake-mcp:
+    role: place_provider
+    capabilities: [outing_search, place_discovery, location_context, destination_recommendation]
+
+ontology:
+  date:
+    definition: shared_experience_composed_of_people_time_place_activity_and_relationship_context
+    elements: [people, time, place, activity, relationship, emotion]
+  experience:
+    elements: [event, food, walk, conversation, discovery, rest]
+  relationship:
+    dimensions: [intimacy, familiarity, novelty, comfort]
+  date_quality:
+    dimensions: [compatibility, experience, flow, novelty, comfort, memory]
+  plan:
+    elements: [meet, activity, meal, transition, optional_followup]
+
+architecture:
+  theory_to_agent: bonsai/dates -> bonsai/date-mcp
+  events_to_agent: bonsai/stage-search -> bonsai/date-mcp
+  food_to_agent: bonsai/tokyo-sushi -> bonsai/date-mcp
+  places_to_agent: bonsai/odekake-mcp -> bonsai/date-mcp
+  orchestration: bonsai/date-mcp -> integrated_date_plan
+
+workflows:
+  date_planning:
+    input: [natural_language_date_intent]
+    steps: [interpret_intent, derive_constraints, query_providers, normalize_results, compose_plan, evaluate_plan]
+    output: [date_plan, alternatives, rationale]
+  provider_search:
+    input: [date_constraints]
+    providers: [stage-search, tokyo-sushi, odekake-mcp]
+    rule: providers remain independently responsible for their own data and search
+  theory_review:
+    input: [date_plan, outcome, evidence]
+    steps: [observe, evaluate, reflect, update_theory]
+
+semantics:
+  intent_examples:
+    - "お笑いを見て寿司を食べたい"
+    - "映画のあと静かなカフェに行きたい"
+    - "祭りを見てから散歩したい"
+  transformation: natural_language -> semantic_constraints -> provider_queries -> experience_plan
+
+sources:
+  policy:
+    - Theory belongs in dates; runtime orchestration belongs in date-mcp.
+    - Provider repositories own their domain data and discovery capabilities.
+    - Do not duplicate provider databases inside date-mcp.
+    - Preserve source and provenance when composing plans.
+    - Distinguish observed, inferred, proposed, validated, and declared meaning.
+
+governance:
+  observed: provider_or_repository_fact
+  inferred: plan_scoring_or_semantic_interpretation
+  proposed: candidate_date_plan_or_relationship
+  validated: reviewed_domain_structure
+  declared: domains/date.yaml
+  source_of_truth: domains/date.yaml
+
+core_principle: >
+  A date is not a place or an event. It is a shared experience. dates defines
+  the meaning, date-mcp decides and composes, and independent providers supply
+  the events, food, and places from which a plan can be made.
