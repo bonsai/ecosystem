@@ -120,6 +120,7 @@ Canonical domain definitions live in [`domains/`](./domains/).
 domains/
 ├── architecture.yaml
 ├── bqml.yaml
+├── date.yaml
 ├── document.yaml
 ├── fashion.yaml
 ├── game.yaml
@@ -131,6 +132,33 @@ domains/
 ```
 
 A **domain is a semantic cluster, not a repository container**. A repository can participate in multiple domains through explicit roles.
+
+## Date domain
+
+[`domains/date.yaml`](./domains/date.yaml) registers the date ecosystem.
+
+```text
+                         dates
+                    theory / semantics
+                           │
+                           ▼
+                       date-mcp
+                  orchestration / plans
+                    │       │       │
+                    ▼       ▼       ▼
+              stage-search tokyo-sushi odekake-mcp
+                 events       food        places
+```
+
+The core distinction is:
+
+- `bonsai/dates` — theory, ontology, experience and date-quality semantics
+- `bonsai/date-mcp` — natural-language intent, provider orchestration and plan composition
+- `bonsai/stage-search` — event provider
+- `bonsai/tokyo-sushi` — sushi/food provider
+- `bonsai/odekake-mcp` — place/outing provider
+
+> **A date is not a place or an event. It is a shared experience.**
 
 ## repo2agent
 
