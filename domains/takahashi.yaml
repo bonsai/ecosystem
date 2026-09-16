@@ -1,0 +1,108 @@
+# Takahashi Method ecosystem registry
+# Presentation = editing/presenting / Service = simple access / Converter = format transformation / Generator = AI composition
+
+api_version: "v1"
+id: takahashi
+name: Takahashi Method Ecosystem
+version: "0.1"
+description: >
+  A semantic registry for repositories that implement the Takahashi Method
+  at different layers: presentation UI, simple service, text-to-PPTX
+  conversion, and AI-assisted slide generation.
+
+principles:
+  repo: responsibility
+  ecosystem: semantic_cluster
+  presentation: human_facing_output
+  converter: format_transformation
+  generator: content_composition
+
+roles:
+  editor:
+    name: Editor / Presenter
+    question: How do I create and present Takahashi-style slides?
+  service:
+    name: Simple Service
+    question: How do I use the Takahashi Method with minimal effort?
+  converter:
+    name: Converter
+    question: How do I transform text into a Takahashi Method presentation?
+  generator:
+    name: AI Generator
+    question: How do I generate slide structure from a manuscript automatically?
+
+repos:
+  bonsai/TAKAHASHI-METHOD:
+    role: editor
+    purpose: >
+      A PWA presentation application for creating and presenting
+      Takahashi-style slides.
+    technology: ionic
+    input: manual_slide_editing
+    output: presentation_slides
+    boundary: presentation_environment
+
+  bonsai/tkhs-method:
+    role: service
+    purpose: >
+      Make the Takahashi Method extremely easy to use as a simple service.
+    input: simple_user_input
+    output: takahashi_style_presentation
+    boundary: service_access
+
+  bonsai/Text_to_TakahashiMethod:
+    role: converter
+    purpose: >
+      Convert text files into PowerPoint presentations written in the
+      Takahashi Method style.
+    input: text_file
+    output: pptx
+    boundary: format_conversion
+
+  bonsai/takahashi-method-generator-ai:
+    role: generator
+    purpose: >
+      Use browser-based AI inference to transform a manuscript into an
+      impactful Takahashi Method presentation.
+    input: manuscript_text
+    output: generated_presentation
+    boundary: ai_composition
+    technology: webgpu
+
+architecture:
+  editor: bonsai/TAKAHASHI-METHOD
+  service: bonsai/tkhs-method
+  converter: bonsai/Text_to_TakahashiMethod
+  generator: bonsai/takahashi-method-generator-ai
+
+relations:
+  service_to_editor: simple_access_to_presentation
+  converter_to_editor: converted_content_to_presentation
+  generator_to_editor: generated_content_to_presentation
+  generator_to_converter: alternative_generation_path
+
+pipeline:
+  manual:
+    steps: [edit, present]
+    owner: bonsai/TAKAHASHI-METHOD
+  simple:
+    steps: [input, generate_or_render, present]
+    owner: bonsai/tkhs-method
+  conversion:
+    steps: [text, parse, layout, export_pptx]
+    owner: bonsai/Text_to_TakahashiMethod
+  ai_generation:
+    steps: [manuscript, infer_structure, generate_slides, present]
+    owner: bonsai/takahashi-method-generator-ai
+
+boundary:
+  editor: owns_presentation_interaction
+  service: owns_low_friction_access
+  converter: owns_format_transformation
+  generator: owns_ai_based_slide_composition
+  ecosystem: owns_semantic_relationships_only
+
+core_principle: >
+  The Takahashi Method ecosystem is not one application. It is a set of
+  distinct responsibilities around the same presentation method:
+  Editor / Presenter, Simple Service, Converter, and AI Generator.
