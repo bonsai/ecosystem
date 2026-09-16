@@ -42,6 +42,48 @@
 
 BQML is a learning layer, **not** a fifth ownership boundary and not the source of truth.
 
+## Agent ecosystem
+
+The agent execution path is deliberately split into small responsibilities:
+
+```text
+Issue / AW Task
+      │
+      ▼
+    TANGO
+ Think / Decide
+      │
+      ▼
+    TAKT
+ Topology / Team / Assign / Handoff / Checkpoint
+      │
+      ▼
+   TAMAGO
+ Agent Types → EGG spawn → Agent hatch
+      │
+      ▼
+    PLEGO
+ Tools / Execution
+      │
+      ▼
+  Worklog / Outcome
+```
+
+### Boundary
+
+| Component | Responsibility | Produces |
+|---|---|---|
+| **AW** | Task / Plan / WF specification and compilation | Task / Plan / WF |
+| **TANGO** | Thinking, planning and decisions; wraps coordination | Decision / Strategy |
+| **TAKT** | Coordination topology: team, assignment, handoff, checkpoint | Topology / Assignment |
+| **TAMAGO** | Owns agent types and hatches concrete agents from EGGs | Agent / Agent Instance |
+| **PLEGO** | Concrete tools and execution | Result |
+| **Worklog** | Cross-layer history | Record |
+
+TANGO may use TAKT internally as its coordination mechanism. TAKT does not own reasoning, workflow compilation or tool execution.
+
+TAMAGO is **not** the AW → WF compiler. AW owns the workflow specification/compilation boundary; TAMAGO owns the agent lifecycle: **type → EGG → spawn → hatch**.
+
 ## Document domain
 
 [`domains/document.yaml`](./domains/document.yaml) defines the document layer.
