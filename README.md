@@ -55,15 +55,15 @@ Issue / AW Task
       │
       ▼
     TAKT
- Topology / Team / Assign / Handoff / Checkpoint
+ Topology / Coordination
       │
       ▼
    TAMAGO
- Agent Types → EGG spawn → Agent hatch
+ Agent Plugins / Team Building
       │
       ▼
     PLEGO
- Tools / Execution
+ Work Plugins / Execution
       │
       ▼
   Worklog / Outcome
@@ -76,13 +76,20 @@ Issue / AW Task
 | **AW** | Task / Plan / WF specification and compilation | Task / Plan / WF |
 | **TANGO** | Thinking, planning and decisions; wraps coordination | Decision / Strategy |
 | **TAKT** | Coordination topology: team, assignment, handoff, checkpoint | Topology / Assignment |
-| **TAMAGO** | Owns agent types and hatches concrete agents from EGGs | Agent / Agent Instance |
-| **PLEGO** | Concrete tools and execution | Result |
+| **TAMAGO** | Agent-based plugins and team building: types, templates, EGGs, hatch, lifecycle | Team / Agent Instances |
+| **PLEGO** | Pluggable work plugins, concrete tools and execution | Result |
 | **Worklog** | Cross-layer history | Record |
+
+A useful boundary is:
+
+```text
+TAMAGO = Who can work together?
+PLEGO  = What can they do?
+```
 
 TANGO may use TAKT internally as its coordination mechanism. TAKT does not own reasoning, workflow compilation or tool execution.
 
-TAMAGO is **not** the AW → WF compiler. AW owns the workflow specification/compilation boundary; TAMAGO owns the agent lifecycle: **type → EGG → spawn → hatch**.
+TAMAGO is **not** the AW → WF compiler. AW owns the workflow specification/compilation boundary. TAMAGO owns agent composition and lifecycle.
 
 ## Document domain
 
@@ -220,6 +227,8 @@ agent proposal
 validation
     ↓
 agent definition
+    ↓
+team composition
     ↓
 workflow
     ↓
