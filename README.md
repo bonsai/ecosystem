@@ -66,6 +66,10 @@ Issue / AW Task
  Work Plugins / Execution
       │
       ▼
+     SAW
+ Cut / Prune / Split
+      │
+      ▼
   Worklog / Outcome
 ```
 
@@ -78,6 +82,7 @@ Issue / AW Task
 | **TAKT** | Coordination topology: team, assignment, handoff, checkpoint | Topology / Assignment |
 | **TAMAGO** | Agent-based plugins and team building: types, templates, EGGs, hatch, lifecycle | Team / Agent Instances |
 | **PLEGO** | Pluggable work plugins, concrete tools and execution | Result |
+| **SAW** | Cut, prune, split, merge, move and verify system structure | Smaller / cleaner structure |
 | **Worklog** | Cross-layer history | Record |
 
 A useful boundary is:
@@ -85,11 +90,14 @@ A useful boundary is:
 ```text
 TAMAGO = Who can work together?
 PLEGO  = What can they do?
+SAW    = What can be removed or separated?
 ```
 
 TANGO may use TAKT internally as its coordination mechanism. TAKT does not own reasoning, workflow compilation or tool execution.
 
 TAMAGO is **not** the AW → WF compiler. AW owns the workflow specification/compilation boundary. TAMAGO owns agent composition and lifecycle.
+
+SAW is the pruning layer. It does not define the business goal, build agent teams, or perform the concrete external work; it reduces unnecessary structure and preserves clean responsibility boundaries.
 
 ## Document domain
 
